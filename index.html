@@ -1045,6 +1045,19 @@ const RESEARCH_COHORT=[
     "researchOnly": true,
     "removed": [],
     "researchNote": "Technical interests from personal website and public LinkedIn search result; supportiveness and adaptive social style from friend; education at Mohan Babu University, Tirupati, friend-described; Instagram content not retrieved"
+  },
+  {
+    "id": "user-profile-draft",
+    "name": "Your profile (AI-drafted)",
+    "linkedinUrl": "",
+    "instagramUrl": "",
+    "linkedinText": "AI-drafted self-profile based on prior conversations; not yet reviewed by the user. Interests: AI, software development, technology projects, learning new skills, career growth, entrepreneurship, fashion, styling, visual design, and self-improvement. Observed patterns: ambitious, curious, persistent, creative, detail-oriented, and expressive in chat. Values inferred from conversations: growth, independence, reliability, loyalty, meaningful connection, respect, and being understood. Evidence basis: repeated conversations about building technical projects, learning, career goals, design preferences, and asking for concrete progress.",
+    "instagramText": "AI-drafted communication and lifestyle notes; not user-verified. Communication in chat is casual, direct, expressive, and persistent when a task matters. Prefers clear updates and follow-through over uncertainty. Career-focused and enjoys creative expression. Social energy, dating intent, affection style, boundaries, hobbies outside chat, and ideal partner preferences are unknown; do not infer them.",
+    "synthetic": false,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "AI-generated draft from prior conversations, included at the user's request for a test run. Inferred traits are not verified facts; review and edit before treating this as a real matchmaking profile."
   }
 ].map(p=>({...p,removed:[]}));
 function pairsOf(P){const out=[];for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++)out.push([P[i],P[j]]);return out;}
@@ -1140,11 +1153,11 @@ function vStep1(){
   <h1>Let your agents find the <em>connection.</em></h1>
   <p>Each participant is represented by an agent that reads only the profile text they supplied, trades structured messages with every other agent, and returns ranked matches with the reasons shown.</p>
   <div class="actions"><button class="btn primary" data-a="goto" data-v="2">Review profiles</button>
-    <button class="btn" data-a="loadResearchCohort">Load 41-profile research list (QA mode)</button>
+    <button class="btn" data-a="loadResearchCohort">Load 42-profile research list (QA mode)</button>
     <button class="btn" data-a="autoplay">Autoplay demo (about 40 seconds)</button>
     <button class="btn ghost" data-a="toggleForm">${S.showForm?'Close form':'Add a consenting participant'}</button></div></section>
   ${prov()}
-  ${S.participants.some(p=>p.researchOnly)?`<div class="notice warn"><b>41-profile research list loaded.</b> Entries 1–40 are synthetic QA profiles, not verified biographies. Thakshil appears as entry 41 for review only; his consent is pending, so his profile is excluded from agent conversations and rankings. The app does not fetch Instagram or LinkedIn.</div>`:syn?`<div class="notice warn"><b>Demo cohort loaded.</b> The six people below are <b>synthetic</b>, written for this demo, with placeholder URLs that are not real profiles. Nothing is retrieved from LinkedIn or Instagram.</div>`:''}
+  ${S.participants.some(p=>p.researchOnly)?`<div class="notice warn"><b>42-profile research list loaded.</b> Entries 1–40 are synthetic QA profiles, not verified biographies. Thakshil appears as a research draft for review only; his consent is pending, so his profile is excluded from agent conversations and rankings. Your AI-drafted profile is included for this requested test run, but its inferred traits must be reviewed. The app does not fetch Instagram or LinkedIn.</div>`:syn?`<div class="notice warn"><b>Demo cohort loaded.</b> The six people below are <b>synthetic</b>, written for this demo, with placeholder URLs that are not real profiles. Nothing is retrieved from LinkedIn or Instagram.</div>`:''}
   <section class="panel" style="margin:20px 0"><h2>Import a real cohort (CSV)</h2>
     <p class="muted small">Paste one CSV with 25 real participants. Required columns: <code>name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText</code>. Use quotes around text containing commas or line breaks. Mark <code>consent</code> as <code>yes</code> only after the person has agreed. Both text fields must be supplied by the participant; URLs alone are not fetched.</p>
     <label for="bulk-csv">Cohort CSV</label><textarea id="bulk-csv" style="min-height:190px" placeholder="name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText&#10;&quot;Participant One&quot;,&quot;https://www.linkedin.com/in/example1&quot;,&quot;https://www.instagram.com/example1&quot;,yes,&quot;Headline and About text supplied by the person&quot;,&quot;Bio and captions supplied by the person&quot;">${esc(S.bulkCsv)}</textarea>
