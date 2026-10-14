@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pairadox: agent-mediated matchmaking demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1c0e1f; --bg2:#160919; --surface:#241727; --surface2:#291b2b; --surface3:#342536; --ink:#f3dbf3; --muted:#d7c1c4; --line:#524345;
+  --accent:#ffb1c0; --accent-ink:#541d2c; --accent-soft:#3a2338; --hl:#6b3a49; --good:#9be0b5; --warn:#e1c28c; --warn-bg:#3a2d1f; --bad:#ffb4ab;
+  --lav:#d2bef0; --gold:#e1c28c; --grad:linear-gradient(100deg,#ffb1c0 0%,#e1c28c 55%,#d2bef0 100%);
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif; --sans:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark; box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:radial-gradient(1200px 600px at 50% -10%,#3a1f3f 0%,var(--bg) 60%) fixed,var(--bg);color:var(--ink);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.15;margin:0 0 .5em;letter-spacing:-.01em}
+h1{font-size:clamp(1.9rem,4.6vw,3rem);max-width:22ch}
+h2{font-size:1.55rem} h3{font-size:1.15rem}
+p{margin:0 0 .8em;max-width:68ch}
+a{color:var(--accent)}
+code{font:.86em ui-monospace,Menlo,Consolas,monospace;background:var(--surface2);padding:.1em .35em;border-radius:4px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px 80px}
+.btn{border:1px solid var(--line);background:var(--surface);padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--grad);color:#3a0818;border-color:transparent;font-weight:600;box-shadow:0 6px 24px rgba(255,177,192,.18)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}
+.notice{border-left:4px solid var(--accent);background:var(--surface);padding:12px 16px;border-radius:0 10px 10px 0;margin:0 0 18px;max-width:80ch}
+.notice.warn{border-color:var(--warn);background:var(--warn-bg)}
+.grid{display:grid;gap:14px}
+.cards{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h3{margin-bottom:.25em}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.av{--h:230;width:36px;height:36px;border-radius:50%;display:inline-grid;place-items:center;font:600 1rem var(--serif);flex:none;
+  background:hsl(var(--h) 35% 26%);color:hsl(var(--h) 70% 88%);border:1px solid var(--line)}
+.badge{font-size:.78rem;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--warn-bg);color:var(--warn)}
+.badge.ok{background:var(--accent-soft);color:var(--accent)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);border-radius:999px;padding:4px 6px 4px 12px;font-weight:500}
+.chip .x{border:0;background:transparent;cursor:pointer;width:22px;height:22px;border-radius:50%;line-height:1;color:var(--muted)}
+.chip .x:hover{background:var(--surface);color:var(--bad)}
+.chip.weak{background:transparent;border:1px dashed var(--muted)}
+.src{font-size:.72rem;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:0 5px;background:var(--surface)}
+.quote{background:linear-gradient(transparent 55%,var(--hl) 55%);padding:0 2px}
+details{margin:6px 0}
+summary{cursor:pointer;color:var(--muted);font-weight:500}
+ul.ev{margin:8px 0 0;padding-left:18px} ul.ev li{margin:4px 0}
+.layout{display:grid;grid-template-columns:240px 1fr;gap:22px}
+@media (max-width:820px){.layout{grid-template-columns:1fr}}
+.tabs{display:flex;flex-direction:column;gap:6px}
+@media (max-width:820px){.tabs{flex-direction:row;overflow-x:auto;padding-bottom:6px}}
+.tab{display:flex;gap:10px;align-items:center;border:1px solid var(--line);background:var(--surface);padding:8px 12px;border-radius:12px;cursor:pointer;text-align:left;white-space:nowrap}
+.tab[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
+.sec{border-top:1px solid var(--line);padding-top:14px;margin-top:16px}
+.sec h3{margin-bottom:.1em}
+.kv{display:grid;grid-template-columns:140px 1fr;gap:6px 14px}
+@media (max-width:560px){.kv{grid-template-columns:1fr}}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+label{display:block;font-weight:500;margin:12px 0 4px}
+input[type=text],input[type=url],textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:110px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:700px){.two{grid-template-columns:1fr}}
+.chatbox{display:flex;flex-direction:column;gap:12px;min-height:320px;max-height:62vh;overflow:auto;padding:4px 2px}
+.msg{max-width:88%;display:flex;gap:10px}
+.msg.r{align-self:flex-end;flex-direction:row-reverse}
+.bubble{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:10px 14px}
+.msg.r .bubble{background:var(--accent-soft);border-color:transparent}
+.bubble .meta{font-size:.78rem;color:var(--muted);margin-bottom:2px}
+.bubble pre{margin:6px 0 0;white-space:pre-wrap;word-break:break-word;font:.78rem ui-monospace,Menlo,Consolas,monospace;color:var(--muted)}
+.pairs{display:flex;flex-direction:column;gap:6px;max-height:62vh;overflow:auto}
+.pair{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 10px;cursor:pointer;text-align:left;display:flex;justify-content:space-between;gap:8px}
+.pair[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.pair .st{font-size:.8rem;color:var(--muted)}
+.rank{display:grid;grid-template-columns:64px 1fr;gap:16px}
+.score{font:700 2.4rem var(--serif);line-height:1;text-align:center}
+.score small{display:block;font:500 .75rem var(--sans);color:var(--muted)}
+.dims{display:grid;gap:6px;margin:10px 0}
+.dim{display:grid;grid-template-columns:130px 1fr 38px;gap:10px;align-items:center;font-size:.9rem}
+.bar{height:10px;border-radius:6px;background:var(--surface2);border:1px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.bar.unk i{background:repeating-linear-gradient(45deg,var(--muted) 0 4px,transparent 4px 8px);opacity:.55}
+.why li{margin:4px 0}
+table.mx{border-collapse:collapse;width:100%;font-size:.88rem}
+table.mx th,table.mx td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+table.mx th:first-child{text-align:left}
+.overflow{overflow-x:auto}
+.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 18px}
+.pill{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;cursor:pointer}
+.pill[aria-selected="true"]{background:var(--grad);color:#3a0818;border-color:transparent;font-weight:600}
+.banner{position:sticky;top:76px;z-index:5;background:var(--grad);color:#3a0818;padding:8px 14px;border-radius:10px;margin-bottom:12px;display:flex;justify-content:space-between;gap:10px}
+.err{color:var(--bad);font-weight:500;margin-top:8px}
+@media (prefers-reduced-motion:no-preference){.msg{animation:in .22s ease-out}@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}}
+
+/* shared nav (Pairadox) */
+.nav{position:sticky;top:0;z-index:20;background:rgba(28,14,31,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.nav-in{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{text-decoration:none;font:500 1.6rem var(--serif);display:flex;align-items:center;gap:10px;color:var(--ink)}
+.brand i{width:26px;height:26px;border-radius:50%;background:var(--grad);display:inline-block}
+.chip-top{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--gold);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.stepper{display:flex;gap:4px;margin:0 auto;padding:4px;list-style:none;border:1px solid var(--line);border-radius:999px;background:var(--bg2)}
+.stepper button{border:0;background:transparent;padding:6px 16px;border-radius:999px;cursor:pointer;text-align:left;line-height:1.2;color:var(--muted)}
+.stepper button b{display:block;font-size:.82rem;font-weight:600;color:var(--ink)}
+.stepper button small{font-size:.68rem;color:var(--muted)}
+.stepper button[aria-current="step"]{background:var(--surface3);box-shadow:inset 0 0 0 1px var(--accent)}
+.stepper button:disabled{opacity:.4;cursor:not-allowed}
+@media (max-width:900px){.stepper{order:3;width:100%;overflow-x:auto}.stepper button small{display:none}}
+.prov{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.prov span{font-size:.72rem;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted);background:var(--bg2)}
+.prov span b{color:var(--ink);font-weight:600}
+.hero{text-align:center;padding:30px 0 10px}
+.hero h1{margin:14px auto;max-width:18ch;font-weight:400;font-size:clamp(2.2rem,5.4vw,3.5rem)}
+.hero h1 em{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:italic}
+.hero p{margin:0 auto 20px;color:var(--muted)}
+.eyebrow{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.hero .actions{justify-content:center}
+.foot{max-width:1200px;margin:60px auto 0;padding:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:.85rem}
+.foot b{font-family:var(--serif);font-weight:500;color:var(--accent);font-size:1.1rem}
+.card,.panel{box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.progress{height:6px;border-radius:6px;background:var(--bg2);overflow:hidden}.progress i{display:block;height:100%;background:var(--grad)}
+.badge.syn{background:var(--surface3);color:var(--gold)}
+
+/* Stitch layouts: steps 2-4 */
+.stagebar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:22px 0 14px}
+.stagepill{display:inline-flex;gap:8px;align-items:center;border:1px solid rgba(225,194,140,.35);background:var(--surface2);color:var(--gold);border-radius:999px;padding:5px 14px;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+.statepill{font-size:.8rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--surface)}
+.statepill b{color:var(--accent);font-weight:600}
+.pagehead h2{font-size:clamp(1.8rem,3.6vw,2.6rem);font-weight:500;margin:6px 0 6px}
+.lead{color:var(--muted);max-width:70ch}
+.hcard{display:grid;grid-template-columns:auto 1fr auto;gap:26px;align-items:center;padding:26px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(135deg,var(--surface3),var(--surface) 70%);box-shadow:0 12px 40px rgba(0,0,0,.35);margin:6px 0 16px}
+.hcard .big{width:104px;height:104px;font-size:2.6rem;border:2px solid var(--accent);box-shadow:0 0 28px rgba(255,177,192,.25)}
+.hcard h2{font-size:2.1rem;margin:0 0 4px}
+.hcard .sub{color:var(--accent);margin:2px 0 8px;max-width:none}
+.tag{display:inline-block;font-size:.78rem;border:1px solid var(--line);border-radius:999px;padding:2px 12px;margin:0 6px 6px 0;background:var(--surface);color:var(--muted)}
+.tag.gold{color:var(--gold);border-color:rgba(225,194,140,.35)} .tag.rose{color:var(--accent);border-color:rgba(255,177,192,.35)}
+@media (max-width:900px){.hcard{grid-template-columns:1fr;text-align:left}}
+.curate{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px 16px;background:var(--bg2);margin-bottom:18px;font-size:.88rem;color:var(--muted)}
+.curate b{color:var(--ink);letter-spacing:.06em;text-transform:uppercase;font-size:.74rem}
+.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+@media (max-width:1050px){.cols3{grid-template-columns:1fr}}
+.gcard{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.gcard h3{font-size:1.25rem;margin:0 0 2px}.gcard .cap{font-size:.78rem;color:var(--muted);margin:0 0 10px}
+.inset{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0}
+.lbl{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600;display:block;margin-bottom:4px}
+.srcgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:12px}
+@media (max-width:900px){.srcgrid{grid-template-columns:1fr}}
+.srcgrid .gcard{background:var(--bg2)}
+.dock{position:sticky;bottom:0;z-index:15;margin:26px -20px 0;padding:12px 20px;background:rgba(22,9,25,.92);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.pillsel{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.delib{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+@media (max-width:1100px){.delib{grid-template-columns:1fr}}
+.ctrl{position:sticky;top:64px;z-index:10;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;background:rgba(28,14,31,.94);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:16px;padding:10px 16px;margin-bottom:16px}
+.ctrl select{width:auto;border-radius:999px;padding:6px 12px}
+.agents{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.agent{display:flex;gap:14px;align-items:center;background:linear-gradient(135deg,var(--surface3),var(--surface));border:1px solid var(--line);border-radius:18px;padding:14px 16px}
+.agent .av{width:56px;height:56px;font-size:1.5rem}
+.agent.talk{border-color:var(--accent);box-shadow:0 0 22px rgba(255,177,192,.2)}
+.ring{--p:0;width:150px;height:150px;border-radius:50%;margin:6px auto 10px;display:grid;place-items:center;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--surface2) 0)}
+.ring div{width:118px;height:118px;border-radius:50%;background:var(--surface);display:grid;place-items:center;text-align:center;font:600 2.3rem var(--serif);line-height:1}
+.ring small{display:block;font:500 .68rem var(--sans);color:var(--muted)}
+.side .gcard{margin-bottom:16px}
+.side ul{list-style:none;margin:6px 0 0;padding:0}.side li{border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:8px 0;background:var(--bg2);font-size:.88rem}
+.side li b{display:block;color:var(--ink)}
+.side li.flag{border-color:rgba(225,194,140,.4);background:var(--warn-bg)}
+.typing{border:1px dashed var(--line);border-radius:12px;padding:10px 14px;color:var(--muted);font-size:.88rem}
+.rhero{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:flex-end;border-bottom:1px solid var(--line);padding:6px 0 16px;margin-bottom:16px}
+.ribbon{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:18px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:1000px){.rgrid{grid-template-columns:1fr}}
+.rcard{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 10px 34px rgba(0,0,0,.3)}
+.rcard.top{grid-column:1/-1;background:linear-gradient(135deg,#3a2338,var(--surface) 65%);border-color:rgba(255,177,192,.45)}
+.rcard h3{font-size:1.6rem;margin:0}
+.rhead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:10px}
+.scorepill{border:1px solid rgba(255,177,192,.4);border-radius:999px;padding:6px 14px;background:var(--bg2);font-size:.85rem;color:var(--ink)}
+.scorepill b{font:700 1.2rem var(--serif);color:var(--accent);margin-right:4px}
+.rcols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0}
+@media (max-width:800px){.rcols{grid-template-columns:1fr}}
+.rbox{border:1px solid var(--line);border-radius:18px;padding:14px 16px;background:var(--bg2)}
+.rbox ul{margin:6px 0 0;padding-left:18px}.rbox li{margin:5px 0;font-size:.9rem}
+.rstrip{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;border:1px solid var(--line);border-radius:14px;padding:12px 18px;margin-top:22px;color:var(--muted);font-size:.85rem;background:var(--bg2)}
+.rstrip b{color:var(--gold)}
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Pairadox"><div class="nav-in">
+    <a class="brand" href="#" data-a="goto" data-v="1"><i aria-hidden="true"></i>Pairadox</a>
+    <span class="chip-top" id="datachip">Synthetic demo data</span>
+    <ol class="stepper" id="stepper" aria-label="Progress"></ol>
+  </div></nav>
+<div class="wrap">
+  <main id="app"></main>
+  <details class="panel" style="margin-top:40px" id="method">
+    <summary>How this works: stack, ingestion method, limits</summary>
+    <h3 style="margin-top:14px">Stack</h3>
+    <p>One static file: HTML, CSS and vanilla JavaScript. No backend, no database, no API keys. Participant data never leaves the browser tab (optional <code>localStorage</code> for added participants).</p>
+    <h3>Profile ingestion</h3>
+    <p>LinkedIn and Instagram block automated access behind logins and anti-bot controls, and this app does not try to get around them. It records the two URLs the participant supplies, but <b>does not fetch them</b>. The participant pastes the text visible on their own profile (LinkedIn headline and About; Instagram bio and captions). A rule-based extractor then pulls out interests, values, relationship intent, location and stated preferences, and <b>every item carries the sentence it came from and which source it came from</b>. Anything not supported by text is left blank and listed under uncertainties. Images are not analysed.</p>
+    <h3>Agents</h3>
+    <p>Each participant gets an <code>Agent</code> object that can read only its own profile. The two agents in a pair trade eight structured messages (introduction, logistics, values, verdict). An agent learns about the other person only from the payloads it receives, then scores from its own side using five weighted dimensions: interests 30%, values 25%, relationship intent 20%, lifestyle 15%, location 10%. Missing data scores a neutral 50 and is shown as unknown, which lowers the evidence-coverage figure. A stated intent clash (serious vs casual) caps the mutual score at 55. Mutual score = 0.6 × average + 0.4 × the lower of the two agents' scores.</p>
+    <h3>What is not real</h3>
+    <p>The agent dialogue is generated from templates filled with extracted facts. There is no language model in this deployment, so the conversation is a transparent protocol rather than open-ended chat. The built-in participants are synthetic and clearly labelled. Age, gender, orientation and who is open to dating whom are not modelled; the demo assumes every pair is a valid candidate.</p>
+  </details>
+</div>
+<footer class="foot"><span><b>Pairadox</b> &nbsp;Agent-mediated matchmaking demo. Template conversations, no model in the scoring path.</span><span>Synthetic participants unless you add a consenting one.</span></footer>
+
+<script>
+// ==ENGINE START==
+const LEX={
+  hiking:{label:'Hiking',group:'outdoor',re:/\b(hik(e|es|ed|er|ers|ing)|treks?|trekking)\b/i},
+  outdoors:{label:'Outdoors',group:'outdoor',re:/\b(outdoors?|camping|nature walks?|national parks?)\b/i},
+  climbing:{label:'Climbing',group:'outdoor',re:/\b(climb(ing|er|ers)?|boulder(ing)?)\b/i},
+  cycling:{label:'Cycling',group:'outdoor',re:/\b(cycl(e|ing|ist)|bike rides?|biking)\b/i},
+  running:{label:'Running',group:'active',re:/\b(runner|running|marathon|5k|10k|long run|trail run(ning)?)\b/i},
+  fitness:{label:'Gym & fitness',group:'active',re:/\b(gym|weightlifting|lifting|crossfit|strength training)\b/i},
+  yoga:{label:'Yoga & mindfulness',group:'active',re:/\b(yoga|pilates|meditation)\b/i},
+  music:{label:'Music',group:'social',re:/\b(guitar|piano|concerts?|vinyl|gigs?|live music|band|rehearsal|singing)\b/i},
+  dance:{label:'Dance',group:'social',re:/\b(danc(e|ing)|salsa|bachata)\b/i},
+  theatre:{label:'Theatre & comedy',group:'social',re:/\b(theat(re|er)|improv|stand-?up comedy|open mic)\b/i},
+  foodie:{label:'Eating out',group:'social',re:/\b(restaurants?|street food|foodie|tasting menu)\b/i},
+  travel:{label:'Travel',group:'social',re:/\b(travel(l?ing|s|led)?|backpacking|passport|road trip)\b/i},
+  gaming:{label:'Games',group:'social',re:/\b(board games?|video games?|gaming|chess|d&d|dungeons)\b/i},
+  volunteering:{label:'Volunteering & mentoring',group:'social',re:/\b(volunteer(s|ing|ed)?|nonprofit|mentor(s|ing|ed)?)\b/i},
+  reading:{label:'Reading',group:'calm',re:/\b(read(ing)?|books?|novels?)\b/i},
+  writing:{label:'Writing',group:'calm',re:/\b(writing|essays?|newsletter|journaling|blogging)\b/i},
+  cooking:{label:'Cooking & baking',group:'calm',re:/\b(cook(s|ed|ing)?|bak(e|es|ed|ing))\b/i},
+  coffee:{label:'Coffee',group:'calm',re:/\b(coffee|espresso|barista|caf[eé]s?)\b/i},
+  film:{label:'Film',group:'calm',re:/\b(cinema|movies?|documentar(y|ies)|film (night|festival|club))\b/i},
+  gardening:{label:'Gardening & plants',group:'calm',re:/\b(garden(ing)?|plants?)\b/i},
+  dogs:{label:'Dogs',group:'calm',re:/\b(dogs?|puppy|puppies)\b/i},
+  cats:{label:'Cats',group:'calm',re:/\b(cats?|kittens?)\b/i},
+  languages:{label:'Language learning',group:'calm',re:/\b(learning (a )?(new )?language|picking up (spanish|french|german|japanese|hindi)|(spanish|french|german|japanese) (classes|lessons))\b/i},
+  art:{label:'Art & making',group:'creative',re:/\b(paint(ing|ings)?|sketch(ing|es)?|pottery|ceramics?|museums?|galler(y|ies)|drawing)\b/i},
+  photography:{label:'Photography',group:'creative',re:/\b(photograph(y|er|s)?|film camera)\b/i},
+  building:{label:'Building & tinkering',group:'creative',re:/\b(open[- ]source|side projects?|hackathons?|tinkering)\b/i}
+};
+const ADJ=[['hiking','outdoors'],['hiking','photography'],['hiking','climbing'],['outdoors','climbing'],['outdoors','dogs'],['hiking','dogs'],['cycling','outdoors'],
+  ['running','fitness'],['running','yoga'],['yoga','fitness'],['cooking','foodie'],['coffee','foodie'],['coffee','reading'],['reading','writing'],['reading','film'],
+  ['art','photography'],['art','writing'],['music','dance'],['music','theatre'],['film','theatre'],['gaming','building'],['travel','photography'],['travel','foodie'],
+  ['travel','languages'],['cooking','gardening']];
+const adjOf={}; ADJ.forEach(([a,b])=>{(adjOf[a]??=new Set()).add(b);(adjOf[b]??=new Set()).add(a);});
+const VLEX={
+  curiosity:{label:'Curiosity & learning',re:/\b(curious|curiosity|always learning|lifelong learn(er|ing)|learning in public|love (to )?learn)\b/i},
+  community:{label:'Community',re:/\b(community|communities|neighbou?rs|volunteer(s|ing)?|giving back)\b/i},
+  ambition:{label:'Ambition',re:/\b(ambitio(n|us)|driven)\b/i},
+  creativity:{label:'Creativity',re:/\b(creative|creativity|crafts?|crafting)\b/i},
+  sustainability:{label:'Sustainability',re:/\b(sustainab(le|ility)|climate|zero[- ]waste|renewable)\b/i},
+  family:{label:'Family',re:/\b(family|parents|siblings|grandparents)\b/i},
+  wellbeing:{label:'Wellbeing & balance',re:/\b(wellbeing|well-being|mindful(ness)?|work-life balance)\b/i},
+  honesty:{label:'Honesty',re:/\b(honest(y)?|authentic(ity)?|transparen(t|cy)|integrity)\b/i},
+  kindness:{label:'Kindness',re:/\b(kind(ness)?(?! of)|compassion(ate)?|empath(y|etic))\b/i},
+  adventure:{label:'Adventure',re:/\b(adventur(e|ous)|spontaneous|explor(e|ing|er))\b/i}
+};
+const WANTS_RE=/\b(looking for|seeking|hoping (to meet|for)|someone who|ideal partner|want someone)\b/i;
+const BOUND_RE=/\b(dealbreakers?|deal-breakers?|not into|non-?smok(er|ing)|no smok(ing|ers?)|don'?t smoke)\b/i;
+const VALVERB=/\b(values?|care(s)? about|believes?|important|passionate|committed|priorit(y|ise|ize))\b/i;
+const LOC_RE=/(?:[Bb]ased in|[Ll]iving in|[Ll]ives in|[Ll]ive in|[Ll]ocated in|📍)\s*(\p{Lu}[\p{L}]+(?:\s\p{Lu}[\p{L}]+)?)/u;
+const INTENT_LABEL={serious:'Long-term / serious',casual:'Casual / light',friends:'Friendship first'};
+const W={interests:.30,values:.25,intent:.20,lifestyle:.15,location:.10};
+const DIM_LABEL={interests:'Interests',values:'Values',intent:'Intent',lifestyle:'Lifestyle',location:'Location'};
+
+function sentsOf(src,lines){return lines.flatMap(l=>l.split(/(?<=[.!?])\s+/).map(t=>t.trim()).filter(Boolean).map(text=>({src,text})));}
+function trunc(s,n=90){s=String(s||'');return s.length>n?s.slice(0,n-1)+'…':s;}
+function detectIntent(t,src){
+  if(!/\b(looking for|seeking|hoping|want|open to|dating|dates?|casual|relationship)\b/i.test(t)) return null;
+  let cls=null;
+  if(/\b(not|n't|no)\b[^.]*\bcasual\b/i.test(t)) cls='serious';
+  else if(/\b(friends? first|friendship first)\b/i.test(t)) cls='friends';
+  else if(/\b(casual|nothing too (heavy|serious)|no strings|keeping it light)\b/i.test(t)) cls='casual';
+  else if(/\b(long[- ]term|serious relationship|life partner|committed|marriage|meaningful relationship)\b/i.test(t)) cls='serious';
+  return cls?{cls,label:INTENT_LABEL[cls],src,evidence:t}:null;
+}
+function addHit(map,key,label,s,explicit){
+  const e=(map[key]??={key,label,sources:[],evidence:[],explicit:false});
+  if(!e.sources.includes(s.src)) e.sources.push(s.src);
+  if(e.evidence.length<3) e.evidence.push({src:s.src,text:s.text});
+  if(explicit) e.explicit=true;
+}
+function analyze(p){
+  const lines=t=>(t||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  const li=lines(p.linkedinText), ig=lines(p.instagramText);
+  const headline=li[0]||null;
+  const sL=sentsOf('LinkedIn',li.slice(1)), sI=sentsOf('Instagram',ig);
+  const interests={},values={},wantsText=[],wantKeys=new Set(),bounds=[];
+  let location=null,intent=null;
+  for(const s of [...sL,...sI]){
+    const t=s.text;
+    if(!location){const m=t.match(LOC_RE); if(m) location={value:m[1].trim(),src:s.src,evidence:t};}
+    if(!intent) intent=detectIntent(t,s.src);
+    if(BOUND_RE.test(t)) bounds.push({text:t,src:s.src});
+    if(WANTS_RE.test(t)){
+      wantsText.push({text:t,src:s.src});
+      for(const [k,d] of Object.entries(LEX)) if(d.re.test(t)) wantKeys.add(k);
+      continue; // traits wanted in a partner are not the participant's own interests
+    }
+    for(const [k,d] of Object.entries(LEX)) if(d.re.test(t)) addHit(interests,k,d.label,s,false);
+    const explicit=VALVERB.test(t);
+    for(const [k,d] of Object.entries(VLEX)) if(d.re.test(t)) addHit(values,k,d.label,s,explicit);
+  }
+  const rm=new Set(p.removed||[]);
+  const I=Object.values(interests).filter(x=>!rm.has('i:'+x.key));
+  const V=Object.values(values).filter(x=>!rm.has('v:'+x.key));
+  const U=[];
+  if(!p.linkedinText&&!p.instagramText) U.push({kind:'gap',text:'No profile text was provided, so nothing could be extracted. The URLs alone are not read.'});
+  else{
+    if(!p.linkedinText) U.push({kind:'gap',text:'No LinkedIn text provided: professional context and values are unknown.'});
+    if(!p.instagramText) U.push({kind:'gap',text:'No Instagram text provided: hobbies are mostly unknown.'});
+    else if(sI.length<3) U.push({kind:'gap',text:`Instagram text is thin (${sI.length} sentence${sI.length===1?'':'s'}); hobby evidence is limited.`});
+  }
+  if(!location) U.push({kind:'gap',text:'No location stated.'});
+  if(!intent) U.push({kind:'gap',text:'No relationship intent stated. Agents will not guess one.'});
+  if(I.length<3) U.push({kind:'gap',text:`Only ${I.length} interest${I.length===1?'':'s'} supported by evidence.`});
+  if(!V.length) U.push({kind:'gap',text:'No values stated in the text; none inferred.'});
+  const single=I.filter(x=>x.sources.length===1).length;
+  if(I.length&&single) U.push({kind:'gap',text:`${single} of ${I.length} interests rest on a single source.`});
+  U.push({kind:'scope',text:'Age, gender, orientation and dating preferences are not extracted or inferred.'});
+  U.push({kind:'scope',text:'Photos and images are not analysed, only text.'});
+  return {headline,location,intent,interests:I,values:V,wants:{items:wantsText,keys:[...wantKeys]},boundaries:bounds,uncertainties:U,counts:{LinkedIn:sL.length,Instagram:sI.length}};
+}
+
+class Agent{
+  constructor(p){this.p=p;this.profile=p.analysis;this.heard={};}
+  get first(){return this.p.name.split(' ')[0];}
+  get label(){return this.first+"'s agent";}
+  disclose(kind){
+    const pr=this.profile;
+    if(kind==='interests') return {headline:pr.headline,interests:pr.interests.map(i=>({key:i.key,label:i.label,sources:i.sources}))};
+    if(kind==='logistics') return {intent:pr.intent?{cls:pr.intent.cls,label:pr.intent.label,evidence:trunc(pr.intent.evidence,120)}:null,location:pr.location?pr.location.value:null};
+    if(kind==='values') return {values:pr.values.map(v=>({key:v.key,label:v.label,explicit:v.explicit}))};
+  }
+  receive(m){Object.assign(this.heard,m.payload);}
+  sharedInterests(){const mine=new Set(this.profile.interests.map(i=>i.key));return (this.heard.interests||[]).filter(i=>mine.has(i.key));}
+  evaluate(){
+    const me=this.profile,h=this.heard,dims={};
+    // interests
+    {const A=me.interests,B=h.interests||[];let known=A.length>0&&B.length>0,score=50,reason='Not enough disclosed interests to compare.',shared=[],adj=[],wantHits=[];
+     if(known){
+       const wt=i=>i.sources.length>=2?1.25:1,bk=new Set(B.map(i=>i.key)),ak=new Set(A.map(i=>i.key));
+       shared=A.filter(i=>bk.has(i.key));
+       const tot=A.reduce((s,i)=>s+wt(i),0),sh=shared.reduce((s,i)=>s+wt(i),0);
+       const cov=sh/tot,jac=shared.length/(A.length+B.length-shared.length);
+       let base=Math.min(100,180*(.5*cov+.5*jac));
+       const seen=new Set();
+       for(const b of B) if(!ak.has(b.key)){const a=A.find(x=>adjOf[b.key]?.has(x.key)); if(a&&!seen.has(b.key)){seen.add(b.key);adj.push({mine:a.label,theirs:b.label});}}
+       const adjB=Math.min(12,4*adj.length);
+       let wB=0;
+       for(const k of me.wants.keys){
+         if(bk.has(k)){wB+=10;wantHits.push(LEX[k].label);}
+         else if(B.some(b=>LEX[b.key]?.group===LEX[k].group)){wB+=6;wantHits.push(LEX[k].label+' (nearby: '+B.filter(b=>LEX[b.key]?.group===LEX[k].group).map(b=>b.label).join(', ')+')');}
+       }
+       score=Math.round(Math.min(100,base+adjB+Math.min(15,wB)));
+       reason=(shared.length?`Shared: ${shared.map(i=>i.label+(i.sources.length>1?' (both sources)':'')).join(', ')}. `:'No shared interests. ')+
+         `${shared.length} of ${A.length} of ${this.first}'s interests appear in the other profile.`+
+         (adj.length?` Adjacent, not identical: ${adj.map(a=>a.theirs+' ~ '+a.mine).join('; ')} (inference).`:'')+
+         (wantHits.length?` Touches something ${this.first} says they want: ${wantHits.join(', ')}.`:'');
+     }
+     dims.interests={score,known,reason,shared:shared.map(s=>s.label),adj};}
+    // values
+    {const A=me.values,B=h.values||[];let known=A.length>0&&B.length>0,score=50,reason=A.length&&!B.length?'The other profile states no values, so nothing to compare.':!A.length?`${this.first}'s profile states no values, so none are compared.`:'No data.',shared=[];
+     if(known){
+       const wt=v=>v.explicit?1:.6,bk=new Set(B.map(v=>v.key));
+       shared=A.filter(v=>bk.has(v.key));
+       const tot=A.reduce((s,v)=>s+wt(v),0),sh=shared.reduce((s,v)=>s+wt(v),0);
+       const jac=shared.length/(A.length+B.length-shared.length);
+       score=Math.round(Math.min(100,160*(.5*sh/tot+.5*jac)));
+       reason=shared.length?`Shared values: ${shared.map(v=>v.label).join(', ')}.`:'No overlapping stated values.';
+     }
+     dims.values={score,known,reason,shared:shared.map(s=>s.label)};}
+    // intent
+    {const a=me.intent?.cls,b=h.intent?.cls;let known=!!(a&&b),score=50,reason='Relationship intent missing on at least one side; not guessed.';
+     if(known){
+       const key=[a,b].sort().join('+');
+       const M={'casual+casual':100,'friends+friends':100,'serious+serious':100,'casual+serious':15,'friends+serious':70,'casual+friends':60};
+       score=M[key];
+       reason=a===b?`Both state the same intent: ${INTENT_LABEL[a]}.`:`Stated intents differ: ${INTENT_LABEL[a]} vs ${INTENT_LABEL[b]}.`;
+     }
+     dims.intent={score,known,reason};}
+    // lifestyle
+    {const vec=list=>{const v={};list.forEach(i=>{const g=LEX[i.key]?.group;if(g)v[g]=(v[g]||0)+1;});return v;};
+     const va=vec(me.interests),vb=vec(h.interests||[]);const gs=new Set([...Object.keys(va),...Object.keys(vb)]);
+     let dot=0,na=0,nb=0;gs.forEach(g=>{const x=va[g]||0,y=vb[g]||0;dot+=x*y;na+=x*x;nb+=y*y;});
+     const known=na>0&&nb>0,top=v=>Object.entries(v).sort((x,y)=>y[1]-x[1])[0]?.[0];
+     const score=known?Math.round(100*dot/Math.sqrt(na*nb)):50;
+     dims.lifestyle={score,known,reason:known?`Activity mix: ${this.first} leans ${top(va)}, the other profile leans ${top(vb)}.`:'Too little activity data to compare.'};}
+    // location
+    {const a=me.location?.value?.toLowerCase(),b=h.location?.toLowerCase();const known=!!(a&&b);
+     dims.location={score:known?(a===b?100:25):50,known,reason:known?(a===b?`Both state ${me.location.value}.`:`Different cities stated (${me.location.value} vs ${h.location}); remote or relocation is unknown.`):'Location missing on at least one side.'};}
+    let total=0,cov=0;
+    for(const k in W){total+=W[k]*dims[k].score;if(dims[k].known)cov+=W[k];}
+    let capped=false;total=Math.round(total);
+    if(dims.intent.known&&dims.intent.score<=15&&total>55){total=55;capped=true;}
+    const unknown=Object.keys(W).filter(k=>!dims[k].known).map(k=>DIM_LABEL[k]);
+    return {total,coverage:Math.round(cov*100),dims,capped,unknown};
+  }
+}
+
+const list=(a,n=4)=>a.slice(0,n).join(', ');
+function textIntro(me,first){
+  const pr=me.profile,top=pr.interests.slice(0,5).map(i=>i.label);
+  let t=first?`Hello. I'm ${me.label}. I only know what ${me.first} put in their LinkedIn and Instagram text. `:`Hello back. I'm ${me.label}, working only from ${me.first}'s own text. `;
+  t+=top.length?`Interests I can back with evidence (${pr.interests.length}): ${list(top,5)}.`:`I found no interests I can back with evidence, so I'll ask rather than assume.`;
+  if(pr.headline) t+=` Headline on file: “${trunc(pr.headline,70)}”.`;
+  if(!first){const sh=me.sharedInterests();
+    if(sh.length) t+=` Overlap I can verify against what you sent: ${list(sh.map(s=>s.label),5)}.`;
+    else if(pr.interests.length&&(me.heard.interests||[]).length) t+=` Nothing overlaps yet in what you've disclosed.`;}
+  return t;
+}
+function textLogistics(me){
+  const pr=me.profile,h=me.heard;let t='';
+  t+=pr.intent?`On intent, ${me.first}'s text says: ${pr.intent.label} (“${trunc(pr.intent.evidence,80)}”). `:`${me.first}'s text states no relationship intent, and I won't invent one. `;
+  t+=pr.location?`Location: ${pr.location.value}.`:`Location: not stated.`;
+  if('intent' in h){
+    if(h.intent&&pr.intent) t+=h.intent.cls===pr.intent.cls?` That matches the intent you shared.`:` That differs from the intent you shared (${h.intent.label}), which I'll weigh heavily.`;
+    else t+=` I can't compare intents because one side is unstated.`;
+  }
+  if(pr.location&&h.location) t+=pr.location.value.toLowerCase()===h.location.toLowerCase()?` Same city.`:` Different cities (${h.location}).`;
+  return t;
+}
+function textValues(me){
+  const pr=me.profile,h=me.heard;
+  let t=pr.values.length?`Values with textual support: ${pr.values.map(v=>v.label+(v.explicit?'':' (keyword only)')).join(', ')}.`:`${me.first}'s text states no values, so I won't infer any.`;
+  const sh=pr.values.filter(v=>(h.values||[]).some(x=>x.key===v.key));
+  if(sh.length) t+=` Shared with you: ${list(sh.map(s=>s.label))}.`;
+  const ev=me.evaluate().dims.interests.adj;
+  if(ev.length) t+=` Curiosity angle (my inference, not a fact): you mention ${ev[0].theirs}, which sits next to ${ev[0].mine} on my side.`;
+  return t;
+}
+function textVerdict(me,ev){
+  const top=Object.keys(W).filter(k=>ev.dims[k].known).sort((a,b)=>ev.dims[b].score-ev.dims[a].score).slice(0,2).map(k=>`${DIM_LABEL[k].toLowerCase()} ${ev.dims[k].score}`);
+  let t=`Verdict from ${me.first}'s side: ${ev.total}/100 with ${ev.coverage}% of the weighting backed by evidence.`;
+  if(top.length) t+=` Strongest: ${top.join(', ')}.`;
+  if(ev.capped) t+=` Capped at 55 because stated intents conflict.`;
+  if(ev.unknown.length) t+=` Unknown, scored neutral: ${ev.unknown.join(', ').toLowerCase()}.`;
+  return t;
+}
+async function converse(pa,pb,emit){
+  const A=new Agent(pa),B=new Agent(pb),msgs=[];
+  const send=async(from,to,kind,payload,text)=>{const m={from:from.p.id,to:to.p.id,kind,payload,text};to.receive(m);msgs.push(m);await emit(m);};
+  await send(A,B,'Introduction',A.disclose('interests'),textIntro(A,true));
+  await send(B,A,'Introduction',B.disclose('interests'),textIntro(B,false));
+  await send(A,B,'Logistics',A.disclose('logistics'),textLogistics(A));
+  await send(B,A,'Logistics',B.disclose('logistics'),textLogistics(B));
+  await send(A,B,'Values',A.disclose('values'),textValues(A));
+  await send(B,A,'Values',B.disclose('values'),textValues(B));
+  const eA=A.evaluate(),eB=B.evaluate();
+  await send(A,B,'Verdict',{score:eA.total,coverage:eA.coverage,capped:eA.capped,dims:Object.fromEntries(Object.keys(W).map(k=>[k,eA.dims[k].score]))},textVerdict(A,eA));
+  await send(B,A,'Verdict',{score:eB.total,coverage:eB.coverage,capped:eB.capped,dims:Object.fromEntries(Object.keys(W).map(k=>[k,eB.dims[k].score]))},textVerdict(B,eB));
+  let mutual=Math.round(.6*(eA.total+eB.total)/2+.4*Math.min(eA.total,eB.total));
+  const capped=eA.capped||eB.capped; if(capped) mutual=Math.min(mutual,55);
+  const dimMutual={};
+  for(const k in W) dimMutual[k]={score:Math.round((eA.dims[k].score+eB.dims[k].score)/2),known:eA.dims[k].known&&eB.dims[k].known};
+  return {ids:[pa.id,pb.id],ev:{[pa.id]:eA,[pb.id]:eB},mutual,capped,dimMutual,msgs};
+}
+
+const SYN=[
+ {id:'asha',name:'Asha Rao',linkedinUrl:'https://www.linkedin.com/in/synthetic-asha-rao',instagramUrl:'https://www.instagram.com/synthetic.asha.rao',
+  linkedinText:`Product Designer, climate-tech startup
+Based in Bengaluru. I design tools that help households understand their energy use. I care about sustainability and believe good design should be accessible. I mentor early-career designers and volunteer with a local design community.`,
+  instagramText:`Weekend hiker, coffee snob 📍 Bengaluru
+Sunrise trek at Savandurga, legs still shaking.
+Sketching in my notebook at a cafe again. Pottery class number three: lopsided bowls but happy.
+Looking for someone curious and kind who wants a long-term relationship and is happy outdoors.
+Reading a novel on the balcony while the plants thrive.`},
+ {id:'rohan',name:'Rohan Mehta',linkedinUrl:'https://www.linkedin.com/in/synthetic-rohan-mehta',instagramUrl:'https://www.instagram.com/synthetic.rohan.mehta',
+  linkedinText:`Senior Software Engineer, developer infrastructure
+Based in Bengaluru. I build developer tools and enjoy open source side projects and the occasional hackathon. I believe in sharing knowledge with the community. I'm always learning something new. Currently picking up Spanish.`,
+  instagramText:`Trail runner, amateur barista ☕
+Half marathon training, week nine.
+Hiked Nandi Hills at 5am with a camera, more photography practice.
+Looking for a long-term partner who values honesty and a good laugh.
+Cooked a big batch of dosas for friends. Board game night at mine this Friday.`},
+ {id:'meera',name:'Meera Iyer',linkedinUrl:'https://www.linkedin.com/in/synthetic-meera-iyer',instagramUrl:'https://www.instagram.com/synthetic.meera.iyer',
+  linkedinText:`Data Scientist, healthcare research
+Based in Bengaluru. I analyse clinical datasets and care about wellbeing and evidence-based thinking. Passionate about learning in public.`,
+  instagramText:`Yoga at 6am, then filter coffee ☕
+Sunday long run along the lake.
+Reading my fourth book this month, then a documentary night with friends.
+Not looking for something casual, hoping to meet someone grounded and warm.
+Cooking with my family at my parents' place.`},
+ {id:'kabir',name:'Kabir Shah',linkedinUrl:'https://www.linkedin.com/in/synthetic-kabir-shah',instagramUrl:'https://www.instagram.com/synthetic.kabir.shah',
+  linkedinText:`Founder, early-stage fintech
+Based in Mumbai. Building fast and shipping often. Ambitious, driven, and always travelling for work.`,
+  instagramText:`Dinner at a new restaurant most nights 🍷
+Weekend in Goa, no laptop for once.
+Front row at a concert last night.
+Casual dates and fun company, nothing too heavy right now.
+Gym at 6, calls at 8.`},
+ {id:'tara',name:'Tara Nair',linkedinUrl:'https://www.linkedin.com/in/synthetic-tara-nair',instagramUrl:'https://www.instagram.com/synthetic.tara.nair',
+  linkedinText:`Graduate student, environmental science`,
+  instagramText:`Dogs, dogs, dogs 🐕
+Hiking with my dog on Sunday.
+New painting in progress.`},
+ {id:'dev',name:'Dev Malhotra',linkedinUrl:'https://www.linkedin.com/in/synthetic-dev-malhotra',instagramUrl:'https://www.instagram.com/synthetic.dev.malhotra',
+  linkedinText:`Music teacher and session guitarist
+Based in Bengaluru. I teach guitar and piano to kids and adults. I believe music brings community together. I value kindness in everything I do.`,
+  instagramText:`Gig tonight at a small venue in Indiranagar 🎸
+Vinyl haul from the Sunday market.
+Looking for a meaningful relationship, ideally with someone who loves live music.
+Slow Sunday: coffee, a book and the dog.
+Cooked pasta for the band after rehearsal.`}
+].map(p=>({...p,synthetic:true,consent:true,removed:[]}));
+function pairsOf(P){const out=[];for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++)out.push([P[i],P[j]]);return out;}
+// ==ENGINE END==
+
+/* ---------------- UI ---------------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const DELAY={live:1100,fast:260,instant:0};
+const STORE='pairadox.custom.v1',LEGACY_STORE='kindred.custom.v1';
+const hue=id=>{let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))%360;return h;};
+const av=p=>`<span class="av" style="--h:${hue(p.id)}" aria-hidden="true">${esc(p.name[0])}</span>`;
+const srcBadge=s=>`<span class="src">${esc(s)}</span>`;
+
+let S={participants:[],convos:{},step:1,confirmed:false,done:false,running:false,cancel:false,speed:'fast',selProfile:'asha',selRank:'asha',selPair:null,livePair:null,live:[],showForm:false,formErr:'',autoplay:false};
+
+function loadParticipants(){
+  let custom=[];
+  try{custom=JSON.parse(localStorage.getItem(STORE)||localStorage.getItem(LEGACY_STORE)||'[]');}catch(e){custom=[];}
+  S.participants=[...SYN.map(p=>({...p,removed:[]})),...custom];
+  S.participants.forEach(p=>p.analysis=analyze(p));
+}
+function saveCustom(){try{localStorage.setItem(STORE,JSON.stringify(S.participants.filter(p=>!p.synthetic).map(({analysis,...r})=>r)));}catch(e){}}
+const byId=id=>S.participants.find(p=>p.id===id);
+const pk=(a,b)=>a.id+'|'+b.id;
+const allPairs=()=>pairsOf(S.participants);
+const convoOf=(a,b)=>S.convos[pk(a,b)]||S.convos[pk(b,a)];
+function invalidate(){S.convos={};S.done=false;S.confirmed=false;if(S.step>2)S.step=2;}
+
+function prov(extra){
+  const syn=S.participants.some(p=>p.synthetic),cust=S.participants.some(p=>!p.synthetic);
+  return `<div class="prov" aria-label="Data provenance">
+  <span><b>People:</b> ${syn?'synthetic demo':''}${syn&&cust?' + ':''}${cust?'consented, self-pasted text':''}</span>
+  <span><b>Source retrieval:</b> none (URLs stored, never fetched)</span>
+  <span><b>Conversations:</b> template-generated</span>
+  <span><b>Model-generated output:</b> only if you press the optional Claude rewrite</span>${extra||''}</div>`;
+}
+/* stepper */
+const STEPS=[['Setup & Ingestion','Participants'],['Profile Analysis','Evidence & edits'],['Agent Deliberations','Template protocol'],['Match Rankings','Explainable scores']];
+function unlocked(n){return n<=2||(n===3&&S.confirmed)||(n===4&&S.done);}
+function vStepper(){
+  $('#stepper').innerHTML=STEPS.map((l,i)=>`<li><button data-a="goto" data-v="${i+1}" ${S.step===i+1?'aria-current="step"':''} ${unlocked(i+1)?'':'disabled'}><b>0${i+1} ${l[0]}</b><small>${l[1]}</small></button></li>`).join('');
+}
+
+/* step 1 */
+function vStep1(){
+  const syn=S.participants.some(p=>p.synthetic);
+  return `<section class="hero"><span class="eyebrow">Stage 01 of 04 · Setup &amp; ingestion</span>
+  <h1>Let your agents find the <em>connection.</em></h1>
+  <p>Each participant is represented by an agent that reads only the profile text they supplied, trades structured messages with every other agent, and returns ranked matches with the reasons shown.</p>
+  <div class="actions"><button class="btn primary" data-a="goto" data-v="2">Review profiles</button>
+    <button class="btn" data-a="autoplay">Autoplay demo (about 40 seconds)</button>
+    <button class="btn ghost" data-a="toggleForm">${S.showForm?'Close form':'Add a consenting participant'}</button></div></section>
+  ${prov()}
+  ${syn?`<div class="notice warn"><b>Demo cohort loaded.</b> The six people below are <b>synthetic</b>, written for this demo, with placeholder URLs that are not real profiles. Nothing is retrieved from LinkedIn or Instagram.</div>`:''}
+  ${S.showForm?vForm():''}
+  <div class="grid cards">${S.participants.map(p=>`<div class="card">
+    <div class="row">${av(p)}<div><h3 style="margin:0">${esc(p.name)}</h3></div>${p.synthetic?'<span class="badge syn">Synthetic</span>':'<span class="badge ok">Consented</span>'}</div>
+    <p class="small muted" style="margin:10px 0 2px">LinkedIn: <code>${esc(p.linkedinUrl)}</code> · URL stored, not fetched · text ${p.linkedinText?.trim()?'supplied':'missing'}</p>
+    <p class="small muted" style="margin:0">Instagram: <code>${esc(p.instagramUrl)}</code> · URL stored, not fetched · text ${p.instagramText?.trim()?'supplied':'missing'}</p>
+    <p class="small" style="margin:10px 0 0">${p.analysis.interests.length} interests, ${p.analysis.values.length} values extracted</p>
+    ${p.synthetic?'':`<button class="btn ghost small" data-a="delP" data-v="${esc(p.id)}">Remove participant</button>`}
+  </div>`).join('')}</div>`;
+}
+function vForm(){return `<div class="panel" id="addform"><h2>Add a participant</h2>
+  <div class="notice warn">Add only people who have agreed to take part. Pairadox does <b>not</b> fetch these URLs: LinkedIn and Instagram restrict automated access and this app does not work around that. Paste the text you can see on your own public profile. Anything you leave out is treated as unknown. Data stays in this browser.</div>
+  <div class="two"><div><label for="f-name">Name</label><input type="text" id="f-name" autocomplete="off"></div><div></div>
+  <div><label for="f-li">LinkedIn profile URL</label><input type="url" id="f-li" placeholder="https://www.linkedin.com/in/your-name"></div>
+  <div><label for="f-ig">Instagram profile URL (public)</label><input type="url" id="f-ig" placeholder="https://www.instagram.com/your-handle"></div>
+  <div><label for="f-lit">LinkedIn text (first line is read as your headline, then About)</label><textarea id="f-lit"></textarea></div>
+  <div><label for="f-igt">Instagram text (bio, then a few captions, one per line)</label><textarea id="f-igt"></textarea></div></div>
+  <label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" id="f-consent" style="margin-top:5px"> <span>I consent to this text being analysed by agents and compared with the other participants in this session.</span></label>
+  ${S.formErr?`<div class="err" role="alert">${esc(S.formErr)}</div>`:''}
+  <div class="actions"><button class="btn primary" data-a="addP">Add and analyse</button></div></div>`;
+}
+
+/* step 2 */
+function chip(p,kind,x){return `<span class="chip ${kind==='v'&&!x.explicit?'weak':''}"><span>${esc(x.label)}</span>${x.sources.map(srcBadge).join('')}<button class="x" data-a="rm" data-v="${kind}:${x.key}" title="Remove: this is not accurate" aria-label="Remove ${esc(x.label)}">×</button></span>`;}
+function evList(arr){return arr.length?`<details><summary>Show the text behind each item</summary><ul class="ev">${arr.map(x=>`<li><b>${esc(x.label)}</b>: ${x.evidence.map(e=>`<span class="quote">“${esc(trunc(e.text,140))}”</span> ${srcBadge(e.src)}`).join(' ')}</li>`).join('')}</ul></details>`:'';}
+function vStep2(){
+  const p=byId(S.selProfile)||S.participants[0],a=p.analysis;
+  const first=p.name.split(' ')[0];
+  const wants=a.wants.items.length?`<ul class="ev">${a.wants.items.map(w=>`<li><span class="quote">“${esc(trunc(w.text,160))}”</span> ${srcBadge(w.src)}</li>`).join('')}</ul>`:'<p class="muted small">Nothing stated.</p>';
+  return `<div class="stagebar"><span class="stagepill">Stage 02 of 04 · Profile analysis</span><span class="statepill">${S.confirmed?'Profiles confirmed':'<b>Awaiting your confirmation</b> · rankings locked'}</span></div>
+  <div class="pagehead"><h2>Profile analysis</h2><p class="lead">Review what each agent will know. Every item shows the text it came from; remove anything that is wrong.</p></div>
+  ${prov('<span><b>Extraction:</b> keyword/regex rules, not a model</span>')}
+  <div class="pillsel" role="tablist" aria-label="Participants">${S.participants.map(q=>`<button class="pill" role="tab" aria-selected="${q.id===p.id}" data-a="selP" data-v="${esc(q.id)}">${esc(q.name)}</button>`).join('')}</div>
+  <section class="hcard"><span class="av big" style="--h:${hue(p.id)}" aria-hidden="true">${esc(p.name[0])}</span>
+    <div><h2>${esc(p.name)}</h2>
+      <p class="sub">${a.headline?`<span class="quote">${esc(a.headline)}</span> ${srcBadge('LinkedIn')}`:'<span class="muted">No headline provided</span>'}</p>
+      <div><span class="tag gold">${a.location?esc(a.location.value)+' '+srcBadge(a.location.src):'Location not stated'}</span><span class="tag rose">${a.intent?esc(a.intent.label)+' '+srcBadge(a.intent.src):'Intent not stated; agents will not guess'}</span>${p.synthetic?'<span class="badge syn">Synthetic profile</span>':'<span class="badge ok">Consented participant</span>'}</div>
+      ${a.intent?`<p class="small" style="margin:6px 0 0"><span class="quote">“${esc(trunc(a.intent.evidence,140))}”</span></p>`:''}</div>
+    <div class="row"><button class="btn" data-a="openSrc">Edit source text</button></div></section>
+  <div class="curate"><span><b>Curate extracted facts</b> · remove anything that is not accurate about ${esc(first)}; changing a profile re-locks later stages.</span><span>${a.interests.length} interests · ${a.values.length} values · LinkedIn ${a.counts.LinkedIn} / Instagram ${a.counts.Instagram} sentences read</span></div>
+  <div class="cols3">
+   <div class="gcard"><h3>Values</h3><p class="cap">Dashed chips come from a keyword only, with no statement like “I value…”. They count less.</p>${a.values.length?`<div class="chips">${a.values.map(x=>chip(p,'v',x)).join('')}</div>${evList(a.values)}`:'<p class="muted">None stated; none inferred.</p>'}</div>
+   <div class="gcard"><h3>What ${esc(first)} says they want</h3><p class="cap">Quoted from the supplied text.</p>${wants}
+     ${a.boundaries.length?`<div class="inset"><span class="lbl">Stated boundaries (shown, not scored)</span><span class="small">${a.boundaries.map(b=>`“${esc(trunc(b.text,100))}”`).join('; ')}</span></div>`:''}</div>
+   <div class="gcard"><h3>Interests and hobbies</h3><p class="cap">Matched by keyword rules against the text.</p>${a.interests.length?`<div class="chips">${a.interests.map(x=>chip(p,'i',x)).join('')}</div>${evList(a.interests)}`:'<p class="muted">None supported by the text.</p>'}</div>
+  </div>
+  <h3 style="margin:26px 0 0">Source references and evidence ground truth</h3>
+  <div class="srcgrid">
+   <div class="gcard"><span class="lbl">Source A · LinkedIn</span><p class="small muted" style="margin:0 0 6px"><code>${esc(p.linkedinUrl)}</code> · URL stored, not fetched</p><p class="small" style="margin:0">${p.linkedinText?.trim()?`Pasted text supplied: ${a.counts.LinkedIn} sentences read.`:'No text supplied; treated as unknown.'}</p></div>
+   <div class="gcard"><span class="lbl">Source B · Instagram</span><p class="small muted" style="margin:0 0 6px"><code>${esc(p.instagramUrl)}</code> · URL stored, not fetched</p><p class="small" style="margin:0">${p.instagramText?.trim()?`Pasted text supplied: ${a.counts.Instagram} sentences read. Images are not analysed.`:'No text supplied; treated as unknown.'}</p></div>
+   <div class="gcard"><span class="lbl">Scope</span><p class="small" style="margin:0">Only text pasted into this browser is analysed. Nothing is retrieved from either site, and nothing is inferred beyond what the text says.</p></div>
+  </div>
+  <div class="gcard" style="margin-top:16px;border-color:rgba(225,194,140,.4)"><span class="lbl">Unknown / uncertain</span><ul class="ev">${a.uncertainties.map(u=>`<li class="${u.kind==='scope'?'muted':''}">${esc(u.text)}</li>`).join('')}</ul></div>
+  <details id="srcdet" style="margin-top:16px" ${S.srcOpen?'open':''}><summary>Source text this profile was built from (editable)</summary>
+     <label for="ta-li">LinkedIn text</label><textarea id="ta-li">${esc(p.linkedinText)}</textarea>
+     <label for="ta-ig">Instagram text</label><textarea id="ta-ig">${esc(p.instagramText)}</textarea>
+     <div class="actions"><button class="btn" data-a="reanalyze">Re-analyse this profile</button></div></details>
+  <div class="dock"><span class="small muted">Confirming locks in what every agent may use. Nothing is shared outside this browser.</span><button class="btn primary" data-a="confirm">Confirm all profiles and meet the agents</button></div>`;
+}
+/* step 3 */
+function msgHtml(m,a,b){
+  const from=byId(m.from),right=m.from!==a.id;
+  return `<div class="msg ${right?'r':''}">${av(from)}<div class="bubble"><div class="meta">${esc(from.name.split(' ')[0])}'s agent to ${esc(byId(m.to).name.split(' ')[0])}'s agent &middot; ${esc(m.kind)} <span class="src">${m.claudeText?'Claude-written':'Template'}</span></div>${esc(m.claudeText||m.text)}${m.claudeText?`<details><summary class="small">Deterministic template text it was rewritten from</summary><p class="small muted">${esc(m.text)}</p></details>`:''}<details><summary class="small">Structured payload sent</summary><pre>${esc(JSON.stringify(m.payload,null,1))}</pre></details></div></div>`;
+}
+function transcriptFor(key){
+  const [ia,ib]=key.split('|'),a=byId(ia),b=byId(ib);
+  const msgs=(S.convos[key]?.msgs)||(S.livePair===key?S.live:[]);
+  return msgs.map(m=>msgHtml(m,a,b)).join('');
+}
+function vStep3(){
+  const pairs=allPairs(),total=pairs.length,doneN=Object.keys(S.convos).length;
+  if(!S.selPair) S.selPair=pk(...pairs[0]);
+  const [ia,ib]=S.selPair.split('|'),a=byId(ia),b=byId(ib);
+  const res=S.convos[S.selPair],live=S.livePair===S.selPair?S.live:[];
+  const nMsg=(res?res.msgs:live).length;
+  const fa=a.name.split(' ')[0],fb=b.name.split(' ')[0];
+  const side=res?(()=>{
+    const ks=Object.keys(W),known=ks.filter(k=>res.dimMutual[k].known);
+    const agree=known.filter(k=>res.dimMutual[k].score>=70),fr=known.filter(k=>res.dimMutual[k].score<50);
+    const unk=[...new Set([...res.ev[a.id].unknown,...res.ev[b.id].unknown])];
+    return `<div class="gcard"><span class="lbl">Mutual score (rule-based)</span><div class="ring" style="--p:${res.mutual}"><div><span>${res.mutual}<small>of 100</small></span></div></div><p class="small muted" style="text-align:center;margin:0">${fa}'s agent ${res.ev[a.id].total} · ${fb}'s agent ${res.ev[b.id].total}${res.capped?'<br><b style="color:var(--bad)">Capped at 55: stated intents conflict</b>':''}</p></div>
+    <div class="gcard"><span class="lbl">Dimensions scoring 70+ </span><ul>${agree.length?agree.map(k=>`<li><b>${DIM_LABEL[k]} · ${res.dimMutual[k].score}</b>${esc(res.ev[a.id].dims[k].reason)}</li>`).join(''):'<li class="muted">None reached 70 on known evidence.</li>'}</ul></div>
+    <div class="gcard"><span class="lbl">Frictions (below 50)</span><ul>${fr.length?fr.map(k=>`<li class="flag"><b>${DIM_LABEL[k]} · ${res.dimMutual[k].score}</b>${esc(res.ev[a.id].dims[k].reason)}</li>`).join(''):'<li class="muted">None on known evidence.</li>'}</ul></div>
+    <div class="gcard"><span class="lbl">Unresolved: no data</span><p class="small" style="margin:6px 0 0">${unk.length?esc(unk.join(', '))+' could not be compared and were scored a neutral 50.':'Every dimension had text on both sides.'}</p></div>`;
+  })():`<div class="gcard"><span class="lbl">Mutual score</span><p class="muted small" style="margin:6px 0 0">Appears here once this pair has finished. Scores come from fixed rules over the confirmed profiles, not from the dialogue wording.</p></div>`;
+  return `<div class="stagebar"><span class="stagepill">Stage 03 of 04 · Agent deliberations</span><span class="statepill">Dialogue: <b>deterministic template protocol</b></span></div>
+  <div class="pagehead"><h2>Agent deliberations</h2><p class="lead">${total} pairs, 8 messages each. Agents share structured facts, react to what they receive, then post a verdict. Nothing here is typed by a person, and no model decides the scores.</p></div>
+  ${prov('<span><b>Dialogue type:</b> deterministic template protocol</span>')}
+  <div class="ctrl"><div class="row"><b style="font-family:var(--serif);font-size:1.05rem">${esc(fa)} &amp; ${esc(fb)}</b><span class="statepill">Message <b>${nMsg}</b> of 8</span><span class="muted small" id="prog" aria-live="polite">${doneN} of ${total} conversations finished</span></div>
+    <div class="row">
+      <button class="btn primary" data-a="run" ${S.running?'disabled':''}>${doneN&&!S.running?'Run again':'Start conversations'}</button>
+      ${S.running?'<button class="btn" data-a="stop">Stop after this pair</button>':''}
+      <label style="margin:0;display:flex;align-items:center;gap:8px;font-weight:500">Speed <select id="speed"><option value="live" ${S.speed==='live'?'selected':''}>Live (readable)</option><option value="fast" ${S.speed==='fast'?'selected':''}>Fast</option><option value="instant" ${S.speed==='instant'?'selected':''}>Instant</option></select></label>
+      ${(typeof claude!=='undefined'&&res)?`<button class="btn" data-a="rewrite" ${S.rewriting?'disabled':''}>${S.rewriting?'Rewriting…':'Optional: Claude rewrite'}</button>`:''}
+      ${S.done?'<button class="btn primary" data-a="goto" data-v="4">See rankings</button>':''}</div></div>
+  ${S.rwNote?`<div class="notice warn" role="status">${esc(S.rwNote)}</div>`:''}
+  <div class="delib"><div>
+    <div class="agents"><div class="agent ${S.livePair===S.selPair?'talk':''}">${av(a)}<div><b>${esc(a.name)}'s agent</b><div class="small muted">${a.analysis.interests.length} interests · ${a.analysis.values.length} values · ${a.analysis.intent?esc(a.analysis.intent.label):'intent unstated'}</div></div></div>
+      <div class="agent">${av(b)}<div><b>${esc(b.name)}'s agent</b><div class="small muted">${b.analysis.interests.length} interests · ${b.analysis.values.length} values · ${b.analysis.intent?esc(b.analysis.intent.label):'intent unstated'}</div></div></div></div>
+    <div class="panel"><div class="chatbox" id="chat" tabindex="0" aria-label="Conversation transcript">${transcriptFor(S.selPair)||'<p class="muted">No messages yet. Start the conversations.</p>'}</div>
+      <p class="small muted" style="margin:10px 0 0">Messages are labelled <b>Template</b> (deterministic) or <b>Claude-written</b> (optional rewrite of the same facts; cosmetic only, scores never change).</p></div>
+    <div class="gcard" style="margin-top:16px"><span class="lbl">All pairs</span><div class="pairs" id="pairs" style="max-height:260px;margin-top:8px">${pairs.map(([x,y])=>{const k=pk(x,y),d=!!S.convos[k];return `<button class="pair" aria-selected="${k===S.selPair}" data-a="selPair" data-v="${k}"><span>${esc(x.name.split(' ')[0])} &amp; ${esc(y.name.split(' ')[0])}</span><span class="st">${d?S.convos[k].mutual+'/100':(S.livePair===k?'talking…':'waiting')}</span></button>`;}).join('')}</div></div>
+  </div><aside class="side" aria-label="Pair summary">${side}</aside></div>`;
+}
+function appendMsg(m,a,b){const c=$('#chat');if(!c)return;if(c.querySelector('p.muted'))c.innerHTML='';c.insertAdjacentHTML('beforeend',msgHtml(m,a,b));c.scrollTop=c.scrollHeight;}
+async function runAll(){
+  if(S.running)return;
+  S.running=true;S.cancel=false;S.convos={};S.done=false;
+  const pairs=allPairs();
+  for(const [a,b] of pairs){
+    if(S.cancel)break;
+    const key=pk(a,b);S.livePair=key;S.selPair=key;S.live=[];render();
+    const res=await converse(a,b,async m=>{S.live.push(m);if(S.selPair===key&&S.step===3)appendMsg(m,a,b);await sleep(DELAY[S.speed]);});
+    S.convos[key]=res;
+    const pr=$('#prog');if(pr)pr.textContent=`${Object.keys(S.convos).length} of ${pairs.length} conversations finished`;
+  }
+  S.running=false;S.livePair=null;S.done=Object.keys(S.convos).length===pairs.length;
+  if(S.step===3)render();
+}
+
+/* step 4 */
+function vStep4(){
+  const me=byId(S.selRank)||S.participants[0],a=me.analysis,fm=me.name.split(' ')[0];
+  const band=r=>r.capped||r.mutual<50?'low':r.mutual>=70?'strong':'mid';
+  const all=S.participants.filter(p=>p.id!==me.id).map(o=>({o,r:convoOf(me,o)})).filter(x=>x.r).sort((x,y)=>y.r.mutual-x.r.mutual);
+  const cnt={all:all.length,strong:all.filter(x=>band(x.r)==='strong').length,mid:all.filter(x=>band(x.r)==='mid').length,low:all.filter(x=>band(x.r)==='low').length};
+  const f=S.rankFilter||'all',others=f==='all'?all:all.filter(x=>band(x.r)===f);
+  const FL=[['all','All evaluated'],['strong','Score 70+'],['mid','Score 50 to 69'],['low','Below 50 or capped']];
+  return `<div class="stagebar"><span class="stagepill">Stage 04 of 04 · Match rankings</span><span class="statepill">${Object.keys(S.convos).length} template conversations complete</span></div>
+  <div class="rhero"><div class="pagehead"><h2>Match rankings</h2><p class="lead">Ranked from rule-based scores over the profile text each person supplied. Five weighted dimensions; hatched bars mean at least one agent had no data and scored it a neutral 50.</p></div></div>
+  ${prov()}
+  <div class="ribbon"><div class="row"><span class="lbl" style="margin:0">Viewing rankings for</span><div class="pillsel" style="margin:0" role="tablist">${S.participants.map(p=>`<button class="pill" role="tab" aria-selected="${p.id===me.id}" data-a="selRank" data-v="${esc(p.id)}">${esc(p.name.split(' ')[0])}</button>`).join('')}</div></div>
+    <div class="filters" role="group" aria-label="Score band filter">${FL.map(([k,l])=>`<button class="pill" aria-pressed="${f===k}" aria-selected="${f===k}" data-a="rankFilter" data-v="${k}">${l} (${cnt[k]})</button>`).join('')}</div>
+    <p class="small muted" style="margin:10px 0 0">Profile basis for ${esc(me.name)}${me.synthetic?' (synthetic)':''}: ${a.interests.length} interests, ${a.values.length} values, intent ${a.intent?esc(a.intent.label):'unstated'}, location ${a.location?esc(a.location.value):'unstated'}. <a href="#" data-a="goto" data-v="2" data-sel="${esc(me.id)}">Open this profile</a></p></div>
+  <div class="rgrid">${others.length?others.map(({o,r})=>{
+    const i=all.findIndex(x=>x.o.id===o.id),mine=r.ev[me.id],theirs=r.ev[o.id],cov=Math.min(mine.coverage,theirs.coverage),fo=o.name.split(' ')[0];
+    const ks=Object.keys(W),conn=ks.filter(k=>r.dimMutual[k].known&&mine.dims[k].score>=70&&theirs.dims[k].score>=70);
+    const expl=ks.filter(k=>!r.dimMutual[k].known||r.dimMutual[k].score<60);
+    const shared=(mine.dims.interests&&a.interests&&o.analysis.interests)?a.interests.filter(x=>o.analysis.interests.some(y=>y.key===x.key)).map(x=>x.label):[];
+    return `<article class="rcard ${i===0&&f==='all'?'top':''}">
+    <div class="rhead"><div><span class="tag gold">Rank #${i+1}</span>${o.synthetic?'<span class="badge syn">Synthetic</span>':''}<h3>${esc(o.name)}</h3>${o.analysis.headline?`<p class="small" style="color:var(--accent);margin:2px 0 0">${esc(o.analysis.headline)}</p>`:''}<p class="small muted" style="margin:2px 0 0">${o.analysis.location?esc(o.analysis.location.value):'Location unstated'} · ${o.analysis.intent?esc(o.analysis.intent.label):'intent unstated'}</p></div>
+      <div class="scorepill"><b>${r.mutual}</b>of 100 · evidence coverage ${cov}%</div></div>
+    <p class="small muted" style="margin:0 0 6px">${esc(fm)}'s agent says ${mine.total}, ${esc(fo)}'s agent says ${theirs.total}.${r.capped?' <b style="color:var(--bad)">Capped at 55: stated intents conflict.</b>':''}</p>
+    ${shared.length?`<div><span class="lbl">Shared interests found in both texts</span>${shared.map(x=>`<span class="tag rose">${esc(x)}</span>`).join('')}</div>`:''}
+    <div class="dims">${ks.map(k=>`<div class="dim"><span>${DIM_LABEL[k]} <span class="muted small">${Math.round(W[k]*100)}%</span></span><div class="bar ${r.dimMutual[k].known?'':'unk'}"><i style="width:${r.dimMutual[k].score}%"></i></div><span>${r.dimMutual[k].score}</span></div>`).join('')}</div>
+    <div class="rcols"><div class="rbox"><span class="lbl">Strongest evidence</span><ul>${conn.length?conn.map(k=>`<li><b>${DIM_LABEL[k]}:</b> ${esc(mine.dims[k].reason)}</li>`).join(''):'<li class="muted">No dimension reached 70 on both sides.</li>'}</ul></div>
+      <div class="rbox"><span class="lbl">Things to check or explore</span><ul>${expl.length?expl.map(k=>`<li><b>${DIM_LABEL[k]}:</b> ${r.dimMutual[k].known?esc(mine.dims[k].reason):'no data on at least one side, scored a neutral 50'}</li>`).join(''):'<li class="muted">Nothing flagged.</li>'}</ul></div></div>
+    <details><summary>Full reasoning from both agents</summary><div class="two" style="margin-top:6px"><div><b class="small">${esc(fm)}'s agent</b><ul class="ev why">${ks.map(k=>`<li><b>${DIM_LABEL[k]}:</b> ${esc(mine.dims[k].reason)}</li>`).join('')}</ul></div>
+      <div><b class="small">${esc(fo)}'s agent</b><ul class="ev why">${ks.map(k=>`<li><b>${DIM_LABEL[k]}:</b> ${esc(theirs.dims[k].reason)}</li>`).join('')}</ul></div></div></details>
+    ${(mine.unknown.length||theirs.unknown.length)?`<p class="small" style="margin:6px 0"><b>Uncertain:</b> ${esc([...new Set([...mine.unknown,...theirs.unknown])].join(', '))} could not be compared from the text provided.</p>`:''}
+    <details><summary>Read the agents' conversation</summary><div class="chatbox" style="max-height:420px;margin-top:8px">${r.msgs.map(m=>msgHtml(m,byId(r.ids[0]),byId(r.ids[1]))).join('')}</div></details>
+  </article>`;}).join(''):'<p class="muted">No matches in this score band.</p>'}</div>
+  <div class="gcard" style="margin-top:22px"><h3>All pairs at a glance</h3><div class="overflow"><table class="mx"><thead><tr><th>Mutual score</th>${S.participants.map(p=>`<th>${esc(p.name.split(' ')[0])}</th>`).join('')}</tr></thead><tbody>
+  ${S.participants.map(x=>`<tr><th>${esc(x.name.split(' ')[0])}</th>${S.participants.map(y=>{if(x.id===y.id)return '<td class="muted">–</td>';const r=convoOf(x,y);return r?`<td style="background:color-mix(in srgb,var(--accent) ${Math.round(r.mutual*.7)}%,transparent)">${r.mutual}</td>`:'<td>?</td>';}).join('')}</tr>`).join('')}</tbody></table></div></div>
+  <div class="rstrip"><span><b>${all.length}</b> candidates ranked for ${esc(fm)} from ${Object.keys(S.convos).length} template conversations</span><span>Scores are heuristics over pasted text. They are not predictions of compatibility, and no introductions are sent.</span></div>`;
+}
+/* render + events */
+function render(){
+  vStepper();
+  const dc=$('#datachip');if(dc)dc.textContent=S.participants.some(p=>!p.synthetic)?'Synthetic + consented data':'Synthetic demo data';
+  const v=[null,vStep1,vStep2,vStep3,vStep4][S.step]();
+  const banner=S.autoplay?`<div class="banner" role="status"><span>Autoplay is running</span><button class="btn" data-a="stopAuto" style="padding:2px 10px">Stop</button></div>`:'';
+  $('#app').innerHTML=banner+v;
+}
+function goto(n){if(!unlocked(n))return;S.step=n;render();window.scrollTo({top:0});}
+const H={
+  goto(t){if(t.dataset.sel)S.selRank=t.dataset.sel,S.selProfile=t.dataset.sel;goto(+t.dataset.v);},
+  toggleForm(){S.showForm=!S.showForm;S.formErr='';render();},
+  selP(t){S.selProfile=t.dataset.v;S.srcOpen=false;render();},
+  selRank(t){S.selRank=t.dataset.v;S.rankFilter='all';render();},
+  selPair(t){S.selPair=t.dataset.v;S.rwNote='';render();},
+  rm(t){const p=byId(S.selProfile);p.removed=[...(p.removed||[]),t.dataset.v];p.analysis=analyze(p);saveCustom();invalidate();render();},
+  reanalyze(){const p=byId(S.selProfile);p.linkedinText=$('#ta-li').value;p.instagramText=$('#ta-ig').value;p.removed=[];p.analysis=analyze(p);saveCustom();invalidate();render();},
+  confirm(){S.confirmed=true;S.step=3;render();window.scrollTo({top:0});},
+  run(){runAll();},
+  async rewrite(){
+    const res=S.convos[S.selPair];if(!res||S.rewriting)return;
+    S.rwNote='';S.rewriting=true;render();
+    let sample=null;try{sample=await claude.use('sample');}catch(e){}
+    if(!sample){S.rwNote='Claude is not available in this deployment, so the deterministic template text is shown.';S.rewriting=false;return render();}
+    let used=0,rejected=0;
+    for(const m of res.msgs){
+      const draft=m.text,from=byId(m.from).name.split(' ')[0];
+      try{
+        const r=await sample(`Rewrite one chat message from ${from}'s dating-profile agent in a natural, warm voice, 1 to 3 sentences. Use ONLY facts present in DRAFT. Do not add interests, traits, opinions, or numbers. Keep every number exactly as written. Output only the message text.\n\nDRAFT: ${draft}`,{modelTier:'quick',cache:false});
+        const t=(r.text||'').trim(),nums=x=>(x.match(/\d+/g)||[]).sort().join(',');
+        if(t&&t.length<700&&nums(t)===nums(draft)){m.claudeText=t;used++;} else rejected++;
+      }catch(e){
+        if(e&&(e.code==='not_granted'||e.code==='rate_limited')){S.rwNote=e.code==='not_granted'?'Permission to use Claude was not granted; template text kept.':'Rate limited; remaining messages keep template text.';break;}
+        rejected++;
+      }
+      render();
+    }
+    if(!S.rwNote)S.rwNote=`${used} message${used===1?'':'s'} rewritten by Claude; ${rejected} kept as template text (failed or changed a number).`;
+    S.rewriting=false;render();
+  },
+  stop(){S.cancel=true;},
+  openSrc(){S.srcOpen=true;render();document.getElementById('srcdet')?.scrollIntoView({behavior:'smooth'});},
+  rankFilter(t){S.rankFilter=t.dataset.v;render();},
+  delP(t){S.participants=S.participants.filter(p=>p.id!==t.dataset.v);saveCustom();invalidate();render();},
+  addP(){
+    const v=id=>$(id).value.trim(),name=v('#f-name'),li=v('#f-li'),ig=v('#f-ig');
+    if(!name){S.formErr='Enter a name.';return render2();}
+    if(!$('#f-consent').checked){S.formErr='Consent is required before a profile can be analysed.';return render2();}
+    if(!/^https?:\/\/([a-z0-9-]+\.)?linkedin\.com\/.+/i.test(li)){S.formErr='Enter a LinkedIn URL that starts with https://www.linkedin.com/.';return render2();}
+    if(!/^https?:\/\/([a-z0-9-]+\.)?instagram\.com\/.+/i.test(ig)){S.formErr='Enter an Instagram URL that starts with https://www.instagram.com/.';return render2();}
+    if(S.participants.length>=25){S.formErr='This demo is capped at 25 participants.';return render2();}
+    const p={id:'u'+Date.now().toString(36),name,linkedinUrl:li,instagramUrl:ig,linkedinText:v('#f-lit'),instagramText:v('#f-igt'),synthetic:false,consent:true,removed:[]};
+    p.analysis=analyze(p);S.participants.push(p);S.selProfile=p.id;S.showForm=false;S.formErr='';saveCustom();invalidate();S.step=2;render();
+  },
+  async autoplay(){
+    if(S.autoplay)return;
+    S.autoplay=true;S.speed='fast';S.selProfile=S.participants[0].id;S.selRank=S.participants[0].id;S.convos={};S.done=false;S.confirmed=false;S.step=2;render();
+    await sleep(6000);if(!S.autoplay)return;
+    S.selProfile=S.participants[1].id;render();await sleep(3500);if(!S.autoplay)return;
+    S.confirmed=true;S.step=3;render();await runAll();if(!S.autoplay)return;
+    await sleep(1200);if(!S.autoplay)return;S.step=4;render();window.scrollTo({top:0});
+    await sleep(5000);S.autoplay=false;render();
+  },
+  stopAuto(){S.autoplay=false;S.cancel=true;render();}
+};
+function render2(){render();}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;if(t.tagName==='A')e.preventDefault();H[t.dataset.a]?.(t,e);});
+document.addEventListener('change',e=>{if(e.target.id==='speed')S.speed=e.target.value;});
+
+loadParticipants();render();
+</script>
+</body>
+</html>
