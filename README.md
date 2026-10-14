@@ -89,3 +89,5 @@ The **Autoplay demo** button runs steps 2 to 4 automatically (about 40 seconds) 
 - `tests/engine.test.js`: Node assertions (extraction honesty, 8 messages per pair, intent cap, payload-only knowledge)
 - `tests/cohort.test.js`: missing evidence, edit/removal, duplicate pairs, per-participant rankings, 25-person cohort
 - `tests/ui_smoke.py`: Playwright smoke test of the full flow
+
+<!-- Pages deployment retrigger: GitHub Actions source enabled 2026-10-14. -->
