@@ -510,6 +510,543 @@ Looking for a meaningful relationship, ideally with someone who loves live music
 Slow Sunday: coffee, a book and the dog.
 Cooked pasta for the band after rehearsal.`}
 ].map(p=>({...p,synthetic:true,consent:true,removed:[]}));
+
+// 40 synthetic QA profiles plus Thakshil's research draft. His draft is visible but excluded from matchmaking until he consents.
+const RESEARCH_COHORT=[
+  {
+    "id": "qa-01",
+    "name": "Ankur Warikoo",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-01",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-01",
+    "linkedinText": "Ankur Warikoo — synthetic QA profile. Interests: Reading; entrepreneurship; fitness. Values: Ambitious; curious; reflective.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Structured routine; personal growth. Communication style: Thoughtful and direct. Connection intent: Professional networking. Preferences: Values learning and consistency.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-02",
+    "name": "Vaibhav Sisinty",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-02",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-02",
+    "linkedinText": "Vaibhav Sisinty — synthetic QA profile. Interests: Technology; travel; startups. Values: Curious; independent; driven.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Startup-focused; flexible routine. Communication style: Direct and energetic. Connection intent: Professional networking. Preferences: Enjoys ambitious collaborators.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-03",
+    "name": "Varun Mayya",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-03",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-03",
+    "linkedinText": "Varun Mayya — synthetic QA profile. Interests: AI; reading; gaming. Values: Analytical; experimental; curious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Technology-oriented; entrepreneurial. Communication style: Direct and idea-focused. Connection intent: Collaboration. Preferences: Values creativity and experimentation.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-04",
+    "name": "Shlok Srivastava",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-04",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-04",
+    "linkedinText": "Shlok Srivastava — synthetic QA profile. Interests: Gadgets; gaming; technology. Values: Playful; curious; creative.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Content creation and tech exploration. Communication style: Casual and expressive. Connection intent: Collaboration. Preferences: Enjoys shared tech interests.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-05",
+    "name": "Raj Shamani",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-05",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-05",
+    "linkedinText": "Raj Shamani — synthetic QA profile. Interests: Business; podcasts; travel. Values: Outgoing; ambitious; curious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Entrepreneurial and event-oriented. Communication style: Energetic and conversational. Connection intent: Professional networking. Preferences: Values initiative and open discussion.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-06",
+    "name": "Ranveer Allahbadia",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-06",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-06",
+    "linkedinText": "Ranveer Allahbadia — synthetic QA profile. Interests: Fitness; podcasts; reading. Values: Curious; expressive; growth-minded.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Fitness and content-focused. Communication style: Conversational and enthusiastic. Connection intent: Collaboration. Preferences: Enjoys meaningful conversations.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-07",
+    "name": "Sharan Hegde",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-07",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-07",
+    "linkedinText": "Sharan Hegde — synthetic QA profile. Interests: Finance; travel; entrepreneurship. Values: Analytical; ambitious; sociable.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Business-focused; enjoys travel. Communication style: Clear and persuasive. Connection intent: Professional networking. Preferences: Values financial literacy and ambition.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-08",
+    "name": "Akshat Shrivastava",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-08",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-08",
+    "linkedinText": "Akshat Shrivastava — synthetic QA profile. Interests: Reading; investing; economics. Values: Independent; analytical; direct.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Research and learning oriented. Communication style: Direct and debate-friendly. Connection intent: Professional networking. Preferences: Values critical thinking.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-09",
+    "name": "Arun Prabhudesai",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-09",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-09",
+    "linkedinText": "Arun Prabhudesai — synthetic QA profile. Interests: Technology; gadgets; photography. Values: Curious; practical; informative.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Technology media and reviews. Communication style: Informative and measured. Connection intent: Collaboration. Preferences: Enjoys sharing technical knowledge.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-10",
+    "name": "Manoj Saru",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-10",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-10",
+    "linkedinText": "Manoj Saru — synthetic QA profile. Interests: Technology; gadgets; video production. Values: Practical; curious; creative.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Digital content and product exploration. Communication style: Friendly and explanatory. Connection intent: Collaboration. Preferences: Values hands-on experimentation.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-11",
+    "name": "Krish Naik",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-11",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-11",
+    "linkedinText": "Krish Naik — synthetic QA profile. Interests: AI; teaching; programming. Values: Analytical; patient; growth-minded.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Continuous learning and technical education. Communication style: Explanatory and structured. Connection intent: Professional networking. Preferences: Enjoys knowledge sharing.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-12",
+    "name": "Ishan Sharma",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-12",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-12",
+    "linkedinText": "Ishan Sharma — synthetic QA profile. Interests: Startups; fitness; content creation. Values: Ambitious; outgoing; curious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Entrepreneurial and digitally connected. Communication style: Energetic and informal. Connection intent: Collaboration. Preferences: Values initiative and creativity.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-13",
+    "name": "BeerBiceps / Ranveer",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-13",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-13",
+    "linkedinText": "BeerBiceps / Ranveer — synthetic QA profile. Interests: Fitness; podcasts; self-improvement. Values: Expressive; curious; ambitious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Fitness and media-oriented. Communication style: Conversational and enthusiastic. Connection intent: Collaboration. Preferences: Enjoys discussing personal growth.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-14",
+    "name": "Piyush Garg",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-14",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-14",
+    "linkedinText": "Piyush Garg — synthetic QA profile. Interests: Coding; AI; cricket. Values: Analytical; practical; curious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Software development and learning. Communication style: Technical and direct. Connection intent: Professional networking. Preferences: Values technical curiosity.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-15",
+    "name": "Aman Dhattarwal",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-15",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-15",
+    "linkedinText": "Aman Dhattarwal — synthetic QA profile. Interests: Education; technology; entrepreneurship. Values: Motivated; communicative; ambitious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Education and creator-focused. Communication style: Encouraging and structured. Connection intent: Collaboration. Preferences: Enjoys helping learners.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-16",
+    "name": "Namita Thapar",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-16",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-16",
+    "linkedinText": "Namita Thapar — synthetic QA profile. Interests: Reading; fitness; entrepreneurship. Values: Ambitious; practical; decisive.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Business leadership and wellness. Communication style: Direct and professional. Connection intent: Professional networking. Preferences: Values accountability and initiative.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-17",
+    "name": "Vineeta Singh",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-17",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-17",
+    "linkedinText": "Vineeta Singh — synthetic QA profile. Interests: Running; business; travel. Values: Resilient; ambitious; disciplined.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Entrepreneurial and fitness-oriented. Communication style: Direct and encouraging. Connection intent: Professional networking. Preferences: Values perseverance.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-18",
+    "name": "Ghazal Alagh",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-18",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-18",
+    "linkedinText": "Ghazal Alagh — synthetic QA profile. Interests: Art; design; entrepreneurship. Values: Creative; curious; family-oriented.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Business and creative projects. Communication style: Warm and collaborative. Connection intent: Collaboration. Preferences: Values creativity and empathy.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-19",
+    "name": "Falguni Nayar",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-19",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-19",
+    "linkedinText": "Falguni Nayar — synthetic QA profile. Interests: Business; reading; travel. Values: Strategic; independent; disciplined.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Leadership and long-term planning. Communication style: Measured and professional. Connection intent: Professional networking. Preferences: Values strategic thinking.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-20",
+    "name": "Kiran Mazumdar-Shaw",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-20",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-20",
+    "linkedinText": "Kiran Mazumdar-Shaw — synthetic QA profile. Interests: Science; reading; social impact. Values: Analytical; determined; thoughtful.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Science and entrepreneurship. Communication style: Precise and evidence-focused. Connection intent: Professional networking. Preferences: Values innovation and impact.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-21",
+    "name": "Diipa Khosla",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-21",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-21",
+    "linkedinText": "Diipa Khosla — synthetic QA profile. Interests: Fashion; travel; photography. Values: Creative; sociable; expressive.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: International travel and creative work. Communication style: Warm and expressive. Connection intent: Collaboration. Preferences: Enjoys visual storytelling.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-22",
+    "name": "Mrunal Panchal",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-22",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-22",
+    "linkedinText": "Mrunal Panchal — synthetic QA profile. Interests: Beauty; fashion; photography. Values: Creative; outgoing; playful.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Beauty content and social activities. Communication style: Casual and expressive. Connection intent: Friendship. Preferences: Values creativity and humour.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-23",
+    "name": "Kusha Kapila",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-23",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-23",
+    "linkedinText": "Kusha Kapila — synthetic QA profile. Interests: Comedy; films; writing. Values: Humorous; expressive; observant.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Creative projects and social events. Communication style: Playful and candid. Connection intent: Collaboration. Preferences: Enjoys humour and storytelling.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-24",
+    "name": "Prajakta Koli",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-24",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-24",
+    "linkedinText": "Prajakta Koli — synthetic QA profile. Interests: Reading; acting; travel. Values: Warm; curious; empathetic.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Creative work and community projects. Communication style: Friendly and thoughtful. Connection intent: Collaboration. Preferences: Values empathy and creativity.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-25",
+    "name": "Shreya Pattar",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-25",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-25",
+    "linkedinText": "Shreya Pattar — synthetic QA profile. Interests: Writing; marketing; reading. Values: Thoughtful; ambitious; creative.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Digital marketing and professional growth. Communication style: Clear and reflective. Connection intent: Professional networking. Preferences: Values writing and learning.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-26",
+    "name": "Shumbul Arifa",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-26",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-26",
+    "linkedinText": "Shumbul Arifa — synthetic QA profile. Interests: Technology; reading; career learning. Values: Curious; independent; analytical.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Technology and career development. Communication style: Direct and thoughtful. Connection intent: Professional networking. Preferences: Values learning and inclusion.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-27",
+    "name": "Saumya Awasthi",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-27",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-27",
+    "linkedinText": "Saumya Awasthi — synthetic QA profile. Interests: Technology; design; reading. Values: Creative; curious; detail-oriented.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Digital projects and skill development. Communication style: Structured and collaborative. Connection intent: Collaboration. Preferences: Values thoughtful feedback.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-28",
+    "name": "Riti Kumari",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-28",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-28",
+    "linkedinText": "Riti Kumari — synthetic QA profile. Interests: Learning; technology; travel. Values: Ambitious; friendly; curious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Career development and networking. Communication style: Encouraging and clear. Connection intent: Professional networking. Preferences: Enjoys sharing career knowledge.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-29",
+    "name": "Masoom Minawala",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-29",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-29",
+    "linkedinText": "Masoom Minawala — synthetic QA profile. Interests: Fashion; travel; photography. Values: Creative; outgoing; ambitious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Fashion and international events. Communication style: Expressive and polished. Connection intent: Collaboration. Preferences: Values originality.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-30",
+    "name": "Srishti Dixit",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-30",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-30",
+    "linkedinText": "Srishti Dixit — synthetic QA profile. Interests: Films; comedy; writing. Values: Humorous; observant; expressive.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Creative work and cultural activities. Communication style: Playful and candid. Connection intent: Friendship. Preferences: Enjoys humour and films.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-31",
+    "name": "Abhiyaan Mahato",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-31",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-31",
+    "linkedinText": "Abhiyaan Mahato — synthetic QA profile. Interests: Coding; gaming; music. Values: Curious; independent; ambitious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: College studies and side projects. Communication style: Casual and direct. Connection intent: Friendship. Preferences: Enjoys shared technical hobbies.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-32",
+    "name": "Chandrakant Kelgire",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-32",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-32",
+    "linkedinText": "Chandrakant Kelgire — synthetic QA profile. Interests: Technology; cricket; travel. Values: Practical; friendly; curious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Student life and skill-building. Communication style: Relaxed and conversational. Connection intent: Professional networking. Preferences: Values peer learning.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-33",
+    "name": "Eshaan Jaiswal",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-33",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-33",
+    "linkedinText": "Eshaan Jaiswal — synthetic QA profile. Interests: Programming; gaming; music. Values: Creative; curious; introverted.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: College and personal projects. Communication style: Thoughtful and informal. Connection intent: Friendship. Preferences: Enjoys low-pressure conversations.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-34",
+    "name": "Aayam Bansal",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-34",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-34",
+    "linkedinText": "Aayam Bansal — synthetic QA profile. Interests: Startups; technology; reading. Values: Ambitious; analytical; curious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Student entrepreneurship. Communication style: Direct and idea-driven. Connection intent: Collaboration. Preferences: Values experimentation.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-35",
+    "name": "Karthik Jagari",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-35",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-35",
+    "linkedinText": "Karthik Jagari — synthetic QA profile. Interests: Coding; fitness; entrepreneurship. Values: Driven; sociable; curious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Student projects and startup learning. Communication style: Energetic and direct. Connection intent: Professional networking. Preferences: Values initiative.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-36",
+    "name": "Koustubh Kulkarni",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-36",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-36",
+    "linkedinText": "Koustubh Kulkarni — synthetic QA profile. Interests: Content creation; photography; travel. Values: Creative; outgoing; curious.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Student life and creator projects. Communication style: Expressive and informal. Connection intent: Collaboration. Preferences: Enjoys brainstorming.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-37",
+    "name": "Jai Sharma",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-37",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-37",
+    "linkedinText": "Jai Sharma — synthetic QA profile. Interests: Community building; technology; cricket. Values: Sociable; ambitious; organised.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: College and student communities. Communication style: Friendly and proactive. Connection intent: Friendship. Preferences: Values teamwork.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-38",
+    "name": "Tarun Srinivasan",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-38",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-38",
+    "linkedinText": "Tarun Srinivasan — synthetic QA profile. Interests: Student communities; gaming; music. Values: Friendly; curious; collaborative.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: College and peer activities. Communication style: Casual and approachable. Connection intent: Friendship. Preferences: Enjoys group activities.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-39",
+    "name": "Rayhaan Shaik",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-39",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-39",
+    "linkedinText": "Rayhaan Shaik — synthetic QA profile. Interests: Technology; football; movies. Values: Curious; practical; sociable.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Student life and technical learning. Communication style: Relaxed and direct. Connection intent: Friendship. Preferences: Values shared activities.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "qa-40",
+    "name": "Sagar Sinha",
+    "linkedinUrl": "https://example.invalid/pairadox-qa/qa-40",
+    "instagramUrl": "https://example.invalid/pairadox-qa/qa-40",
+    "linkedinText": "Sagar Sinha — synthetic QA profile. Interests: Reading; technology; fitness. Values: Reflective; ambitious; disciplined.",
+    "instagramText": "Synthetic test attributes only. Lifestyle: Career preparation and fitness. Communication style: Thoughtful and structured. Connection intent: Professional networking. Preferences: Values consistency.",
+    "synthetic": true,
+    "consent": true,
+    "researchOnly": false,
+    "removed": [],
+    "researchNote": "Fictional QA attributes from supplied PDF; not biographical facts"
+  },
+  {
+    "id": "thakshil-research",
+    "name": "Eskala Thakshil",
+    "linkedinUrl": "https://www.linkedin.com/in/eskala-thakshil-6a15ab233",
+    "instagramUrl": "https://www.instagram.com/thakshil_/",
+    "linkedinText": "Computer science graduate (friend-described). Software development, AI/ML projects, coding and algorithm practice, side projects, student community and continuous learning. Public-source signals from personal website and LinkedIn search result.",
+    "instagramText": "Friend-described: reliable and helpful, emotionally supportive, and adapts social energy to the company. Education at Mohan Babu University, Tirupati is friend-described. Instagram content was not retrieved. Relationship intent and preferences unknown.",
+    "synthetic": false,
+    "consent": false,
+    "researchOnly": true,
+    "removed": [],
+    "researchNote": "Technical interests from personal website and public LinkedIn search result; supportiveness and adaptive social style from friend; education at Mohan Babu University, Tirupati, friend-described; Instagram content not retrieved"
+  }
+].map(p=>({...p,removed:[]}));
 function pairsOf(P){const out=[];for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++)out.push([P[i],P[j]]);return out;}
 // ==ENGINE END==
 
@@ -576,14 +1113,15 @@ function importCohort(){
 }
 const byId=id=>S.participants.find(p=>p.id===id);
 const pk=(a,b)=>a.id+'|'+b.id;
-const allPairs=()=>pairsOf(S.participants);
+const matchParticipants=()=>S.participants.filter(p=>!p.researchOnly);
+const allPairs=()=>pairsOf(matchParticipants());
 const convoOf=(a,b)=>S.convos[pk(a,b)]||S.convos[pk(b,a)];
 function invalidate(){S.convos={};S.done=false;S.confirmed=false;if(S.step>2)S.step=2;}
 
 function prov(extra){
-  const syn=S.participants.some(p=>p.synthetic),cust=S.participants.some(p=>!p.synthetic);
+  const syn=S.participants.some(p=>p.synthetic),cust=S.participants.some(p=>!p.synthetic&&!p.researchOnly),research=S.participants.some(p=>p.researchOnly);
   return `<div class="prov" aria-label="Data provenance">
-  <span><b>People:</b> ${syn?'synthetic demo':''}${syn&&cust?' + ':''}${cust?'consented, self-pasted text':''}</span>
+  <span><b>People:</b> ${syn?'synthetic demo':''}${syn&&cust?' + ':''}${cust?'consented, self-pasted text':''}${research?(syn||cust?' + ':'')+'research draft (not matched)':''}</span>
   <span><b>Source retrieval:</b> none (URLs stored, never fetched)</span>
   <span><b>Conversations:</b> template-generated</span>
   <span><b>Model-generated output:</b> only if you press the optional Claude rewrite</span>${extra||''}</div>`;
@@ -602,10 +1140,11 @@ function vStep1(){
   <h1>Let your agents find the <em>connection.</em></h1>
   <p>Each participant is represented by an agent that reads only the profile text they supplied, trades structured messages with every other agent, and returns ranked matches with the reasons shown.</p>
   <div class="actions"><button class="btn primary" data-a="goto" data-v="2">Review profiles</button>
+    <button class="btn" data-a="loadResearchCohort">Load 41-profile research list (QA mode)</button>
     <button class="btn" data-a="autoplay">Autoplay demo (about 40 seconds)</button>
     <button class="btn ghost" data-a="toggleForm">${S.showForm?'Close form':'Add a consenting participant'}</button></div></section>
   ${prov()}
-  ${syn?`<div class="notice warn"><b>Demo cohort loaded.</b> The six people below are <b>synthetic</b>, written for this demo, with placeholder URLs that are not real profiles. Nothing is retrieved from LinkedIn or Instagram.</div>`:''}
+  ${S.participants.some(p=>p.researchOnly)?`<div class="notice warn"><b>41-profile research list loaded.</b> Entries 1–40 are synthetic QA profiles, not verified biographies. Thakshil appears as entry 41 for review only; his consent is pending, so his profile is excluded from agent conversations and rankings. The app does not fetch Instagram or LinkedIn.</div>`:syn?`<div class="notice warn"><b>Demo cohort loaded.</b> The six people below are <b>synthetic</b>, written for this demo, with placeholder URLs that are not real profiles. Nothing is retrieved from LinkedIn or Instagram.</div>`:''}
   <section class="panel" style="margin:20px 0"><h2>Import a real cohort (CSV)</h2>
     <p class="muted small">Paste one CSV with 25 real participants. Required columns: <code>name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText</code>. Use quotes around text containing commas or line breaks. Mark <code>consent</code> as <code>yes</code> only after the person has agreed. Both text fields must be supplied by the participant; URLs alone are not fetched.</p>
     <label for="bulk-csv">Cohort CSV</label><textarea id="bulk-csv" style="min-height:190px" placeholder="name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText&#10;&quot;Participant One&quot;,&quot;https://www.linkedin.com/in/example1&quot;,&quot;https://www.instagram.com/example1&quot;,yes,&quot;Headline and About text supplied by the person&quot;,&quot;Bio and captions supplied by the person&quot;">${esc(S.bulkCsv)}</textarea>
@@ -615,11 +1154,11 @@ function vStep1(){
   </section>
   ${S.showForm?vForm():''}
   <div class="grid cards">${S.participants.map(p=>`<div class="card">
-    <div class="row">${av(p)}<div><h3 style="margin:0">${esc(p.name)}</h3></div>${p.synthetic?'<span class="badge syn">Synthetic</span>':'<span class="badge ok">Consented</span>'}</div>
+    <div class="row">${av(p)}<div><h3 style="margin:0">${esc(p.name)}</h3></div>${p.researchOnly?'<span class="badge">Research draft · pending consent</span>':p.synthetic?'<span class="badge syn">Synthetic QA</span>':'<span class="badge ok">Consented</span>'}</div>
     <p class="small muted" style="margin:10px 0 2px">LinkedIn: <code>${esc(p.linkedinUrl)}</code> · URL stored, not fetched · text ${p.linkedinText?.trim()?'supplied':'missing'}</p>
     <p class="small muted" style="margin:0">Instagram: <code>${esc(p.instagramUrl)}</code> · URL stored, not fetched · text ${p.instagramText?.trim()?'supplied':'missing'}</p>
     <p class="small" style="margin:10px 0 0">${p.analysis.interests.length} interests, ${p.analysis.values.length} values extracted</p>
-    ${p.synthetic?'':`<button class="btn ghost small" data-a="delP" data-v="${esc(p.id)}">Remove participant</button>`}
+    ${p.researchOnly?'<p class="small muted">Excluded from matchmaking until reviewed and consented.</p>':p.synthetic?'':`<button class="btn ghost small" data-a="delP" data-v="${esc(p.id)}">Remove participant</button>`}
   </div>`).join('')}</div>`;
 }
 function vForm(){return `<div class="panel" id="addform"><h2>Add a participant</h2>
@@ -734,16 +1273,17 @@ async function runAll(){
 
 /* step 4 */
 function vStep4(){
-  const me=byId(S.selRank)||S.participants[0],a=me.analysis,fm=me.name.split(' ')[0];
+  const rankedPeople=matchParticipants();
+  const me=rankedPeople.find(p=>p.id===S.selRank)||rankedPeople[0],a=me.analysis,fm=me.name.split(' ')[0];
   const band=r=>r.capped||r.mutual<50?'low':r.mutual>=70?'strong':'mid';
-  const all=S.participants.filter(p=>p.id!==me.id).map(o=>({o,r:convoOf(me,o)})).filter(x=>x.r).sort((x,y)=>y.r.mutual-x.r.mutual);
+  const all=rankedPeople.filter(p=>p.id!==me.id).map(o=>({o,r:convoOf(me,o)})).filter(x=>x.r).sort((x,y)=>y.r.mutual-x.r.mutual);
   const cnt={all:all.length,strong:all.filter(x=>band(x.r)==='strong').length,mid:all.filter(x=>band(x.r)==='mid').length,low:all.filter(x=>band(x.r)==='low').length};
   const f=S.rankFilter||'all',others=f==='all'?all:all.filter(x=>band(x.r)===f);
   const FL=[['all','All evaluated'],['strong','Score 70+'],['mid','Score 50 to 69'],['low','Below 50 or capped']];
   return `<div class="stagebar"><span class="stagepill">Stage 04 of 04 · Match rankings</span><span class="statepill">${Object.keys(S.convos).length} template conversations complete</span></div>
   <div class="rhero"><div class="pagehead"><h2>Match rankings</h2><p class="lead">Ranked from rule-based scores over the profile text each person supplied. Five weighted dimensions; hatched bars mean at least one agent had no data and scored it a neutral 50.</p></div></div>
   ${prov()}
-  <div class="ribbon"><div class="row"><span class="lbl" style="margin:0">Viewing rankings for</span><div class="pillsel" style="margin:0" role="tablist">${S.participants.map(p=>`<button class="pill" role="tab" aria-selected="${p.id===me.id}" data-a="selRank" data-v="${esc(p.id)}">${esc(p.name.split(' ')[0])}</button>`).join('')}</div></div>
+  <div class="ribbon"><div class="row"><span class="lbl" style="margin:0">Viewing rankings for</span><div class="pillsel" style="margin:0" role="tablist">${rankedPeople.map(p=>`<button class="pill" role="tab" aria-selected="${p.id===me.id}" data-a="selRank" data-v="${esc(p.id)}">${esc(p.name.split(' ')[0])}</button>`).join('')}</div></div>
     <div class="filters" role="group" aria-label="Score band filter">${FL.map(([k,l])=>`<button class="pill" aria-pressed="${f===k}" aria-selected="${f===k}" data-a="rankFilter" data-v="${k}">${l} (${cnt[k]})</button>`).join('')}</div>
     <p class="small muted" style="margin:10px 0 0">Profile basis for ${esc(me.name)}${me.synthetic?' (synthetic)':''}: ${a.interests.length} interests, ${a.values.length} values, intent ${a.intent?esc(a.intent.label):'unstated'}, location ${a.location?esc(a.location.value):'unstated'}. <a href="#" data-a="goto" data-v="2" data-sel="${esc(me.id)}">Open this profile</a></p></div>
   <div class="rgrid">${others.length?others.map(({o,r})=>{
@@ -764,14 +1304,14 @@ function vStep4(){
     ${(mine.unknown.length||theirs.unknown.length)?`<p class="small" style="margin:6px 0"><b>Uncertain:</b> ${esc([...new Set([...mine.unknown,...theirs.unknown])].join(', '))} could not be compared from the text provided.</p>`:''}
     <details><summary>Read the agents' conversation</summary><div class="chatbox" style="max-height:420px;margin-top:8px">${r.msgs.map(m=>msgHtml(m,byId(r.ids[0]),byId(r.ids[1]))).join('')}</div></details>
   </article>`;}).join(''):'<p class="muted">No matches in this score band.</p>'}</div>
-  <div class="gcard" style="margin-top:22px"><h3>All pairs at a glance</h3><div class="overflow"><table class="mx"><thead><tr><th>Mutual score</th>${S.participants.map(p=>`<th>${esc(p.name.split(' ')[0])}</th>`).join('')}</tr></thead><tbody>
-  ${S.participants.map(x=>`<tr><th>${esc(x.name.split(' ')[0])}</th>${S.participants.map(y=>{if(x.id===y.id)return '<td class="muted">–</td>';const r=convoOf(x,y);return r?`<td style="background:color-mix(in srgb,var(--accent) ${Math.round(r.mutual*.7)}%,transparent)">${r.mutual}</td>`:'<td>?</td>';}).join('')}</tr>`).join('')}</tbody></table></div></div>
+  <div class="gcard" style="margin-top:22px"><h3>All pairs at a glance</h3><div class="overflow"><table class="mx"><thead><tr><th>Mutual score</th>${rankedPeople.map(p=>`<th>${esc(p.name.split(' ')[0])}</th>`).join('')}</tr></thead><tbody>
+  ${rankedPeople.map(x=>`<tr><th>${esc(x.name.split(' ')[0])}</th>${rankedPeople.map(y=>{if(x.id===y.id)return '<td class="muted">–</td>';const r=convoOf(x,y);return r?`<td style="background:color-mix(in srgb,var(--accent) ${Math.round(r.mutual*.7)}%,transparent)">${r.mutual}</td>`:'<td>?</td>';}).join('')}</tr>`).join('')}</tbody></table></div></div>
   <div class="rstrip"><span><b>${all.length}</b> candidates ranked for ${esc(fm)} from ${Object.keys(S.convos).length} template conversations</span><span>Scores are heuristics over pasted text. They are not predictions of compatibility, and no introductions are sent.</span></div>`;
 }
 /* render + events */
 function render(){
   vStepper();
-  const dc=$('#datachip');if(dc)dc.textContent=S.participants.some(p=>!p.synthetic)?'Synthetic + consented data':'Synthetic demo data';
+  const dc=$('#datachip');if(dc)dc.textContent=S.participants.some(p=>p.researchOnly)?'41-profile research QA':S.participants.some(p=>!p.synthetic)?'Synthetic + consented data':'Synthetic demo data';
   const v=[null,vStep1,vStep2,vStep3,vStep4][S.step]();
   const banner=S.autoplay?`<div class="banner" role="status"><span>Autoplay is running</span><button class="btn" data-a="stopAuto" style="padding:2px 10px">Stop</button></div>`:'';
   $('#app').innerHTML=banner+v;
@@ -792,6 +1332,13 @@ const H={
   goto(t){if(t.dataset.sel)S.selRank=t.dataset.sel,S.selProfile=t.dataset.sel;goto(+t.dataset.v);},
   toggleForm(){S.showForm=!S.showForm;S.formErr='';render();},
   importCohort(){importCohort();},
+  loadResearchCohort(){
+    S.participants=RESEARCH_COHORT.map(p=>({...p,analysis:analyze(p)}));
+    S.convos={};S.done=false;S.confirmed=false;S.step=1;S.speed='instant';
+    S.selProfile=RESEARCH_COHORT[0].id;S.selRank=RESEARCH_COHORT[0].id;S.selPair=null;
+    S.bulkMsg='Loaded 41 research entries: 40 synthetic QA profiles plus Thakshil at #41. Thakshil is visible for review but excluded from matchmaking while consent is pending.';
+    render();window.scrollTo({top:0});
+  },
   csvExample(){S.bulkCsv='name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText\n"Participant One","https://www.linkedin.com/in/example1","https://www.instagram.com/example1",yes,"Headline and About text supplied by the person","Bio and captions supplied by the person"';S.bulkMsg='Example only—not a real participant. Replace every field with verified participant-provided data before importing.';render();},
   selP(t){S.selProfile=t.dataset.v;S.srcOpen=false;render();},
   selRank(t){S.selRank=t.dataset.v;S.rankFilter='all';render();},
