@@ -37,21 +37,32 @@
       "continuous learning"
     ],
     "personalityAndValues": [
-      "problem-solving orientation (self-described on personal site)",
-      "systems thinking (self-described on personal site)",
-      "data-driven work (self-described on personal site)",
-      "continuous learning (self-described on personal site)"
+      "Problem-solving orientation (public personal website)",
+      "Systems thinking (public personal website)",
+      "Data-driven work (public personal website)",
+      "Continuous learning (public personal website)",
+      "Reliable and helpful friend (friend-provided description)",
+      "Emotionally present and supportive (friend-provided description)"
     ],
     "lifestyleAndGoals": [
       "building and shipping software projects",
       "career growth in software/AI",
       "community learning and collaboration"
     ],
-    "communicationStyle": null,
+    "communicationStyle": "Adapts his social energy to the people around him; described as more introverted with introverted people and more extroverted with extroverted people (friend-provided description).",
     "connectionIntent": null,
-    "preferences": null
+    "preferences": null,
+    "education": "Graduated from Mohan Babu University in Tirupati (friend-provided description)."
   },
   "consentStatus": "pending",
-  "dataStatus": "public-source research notes, not yet a consented Pairadox participant record",
-  "note": "These signals are based on the public personal website and LinkedIn search result, not Instagram. Do not treat them as a complete or verified personal profile. Ask Thakshil to review and approve the profile before using it in matchmaking."
+  "dataStatus": "Research draft combining public-source notes and friend-provided descriptions; not yet a consented Pairadox participant record.",
+  "note": "Public-source signals and friend-provided descriptions are separated by provenance. Instagram content was not retrieved. Obtain Thakshil's review and agreement before importing these notes into the real matchmaking cohort.",
+  "friendProvidedNotes": {
+    "source": "User-described personal knowledge; not independently verified",
+    "education": "Graduated from Mohan Babu University in Tirupati",
+    "socialStyle": "Adapts to the people around him; more introverted with introverted people and more extroverted with extroverted people",
+    "friendshipStyle": "Reliable friend who helps when someone needs him",
+    "emotionalAvailability": "Emotionally present and supportive",
+    "reviewStatus": "Needs participant review before being used in a real matchmaking cohort"
+  }
 }
