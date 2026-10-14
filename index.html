@@ -1038,8 +1038,8 @@ const RESEARCH_COHORT=[
     "name": "Eskala Thakshil",
     "linkedinUrl": "https://www.linkedin.com/in/eskala-thakshil-6a15ab233",
     "instagramUrl": "https://www.instagram.com/thakshil_/",
-    "linkedinText": "Computer science graduate (friend-described). Software development, AI/ML projects, coding and algorithm practice, side projects, student community and continuous learning. Public-source signals from personal website and LinkedIn search result.",
-    "instagramText": "Friend-described: reliable and helpful, emotionally supportive, and adapts social energy to the company. Education at Mohan Babu University, Tirupati is friend-described. Instagram content was not retrieved. Relationship intent and preferences unknown.",
+    "linkedinText": "Computer science studies (as presented on public personal website). Software development, AI/ML projects, coding and algorithm practice, student learning/community projects, continuous learning. Research notes from personal website and public LinkedIn search result; not participant-submitted text.",
+    "instagramText": "",
     "synthetic": false,
     "consent": false,
     "researchOnly": true,
@@ -1155,10 +1155,10 @@ function vStep1(){
   ${S.showForm?vForm():''}
   <div class="grid cards">${S.participants.map(p=>`<div class="card">
     <div class="row">${av(p)}<div><h3 style="margin:0">${esc(p.name)}</h3></div>${p.researchOnly?'<span class="badge">Research draft · pending consent</span>':p.synthetic?'<span class="badge syn">Synthetic QA</span>':'<span class="badge ok">Consented</span>'}</div>
-    <p class="small muted" style="margin:10px 0 2px">LinkedIn: <code>${esc(p.linkedinUrl)}</code> · URL stored, not fetched · text ${p.linkedinText?.trim()?'supplied':'missing'}</p>
-    <p class="small muted" style="margin:0">Instagram: <code>${esc(p.instagramUrl)}</code> · URL stored, not fetched · text ${p.instagramText?.trim()?'supplied':'missing'}</p>
+    <p class="small muted" style="margin:10px 0 2px">LinkedIn: <code>${esc(p.linkedinUrl)}</code> · URL stored, not fetched · ${p.researchOnly?'public-source research notes':p.linkedinText?.trim()?'text supplied':'text missing'}</p>
+    <p class="small muted" style="margin:0">Instagram: <code>${esc(p.instagramUrl)}</code> · URL stored, not fetched · ${p.researchOnly?'not retrieved; no Instagram evidence used':p.instagramText?.trim()?'text supplied':'text missing'}</p>
     <p class="small" style="margin:10px 0 0">${p.analysis.interests.length} interests, ${p.analysis.values.length} values extracted</p>
-    ${p.researchOnly?'<p class="small muted">Excluded from matchmaking until reviewed and consented.</p>':p.synthetic?'':`<button class="btn ghost small" data-a="delP" data-v="${esc(p.id)}">Remove participant</button>`}
+    ${p.researchOnly?`<p class="small muted">${esc(p.researchNote)} Friend-provided observations are labelled as such in the source notes. Excluded from matchmaking until Thakshil reviews and consents.</p>`:p.synthetic?'':`<button class="btn ghost small" data-a="delP" data-v="${esc(p.id)}">Remove participant</button>`}
   </div>`).join('')}</div>`;
 }
 function vForm(){return `<div class="panel" id="addform"><h2>Add a participant</h2>
