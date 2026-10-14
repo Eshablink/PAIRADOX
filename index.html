@@ -1069,7 +1069,7 @@ function loadParticipants(){
   S.participants.forEach(p=>p.analysis=analyze(p));
 }
 function saveCustom(){try{
-  const custom=S.participants.filter(p=>!p.synthetic).map(({analysis,...r})=>r);
+  const custom=S.participants.filter(p=>!p.synthetic&&!p.researchOnly).map(({analysis,...r})=>r);
   localStorage.setItem(STORE,JSON.stringify(custom));
   localStorage.setItem('pairadox.realCohortMode.v1',String(!S.participants.some(p=>p.synthetic)));
 }catch(e){}}
