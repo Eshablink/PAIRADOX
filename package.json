@@ -1,0 +1,10 @@
+{
+  "name": "pairadox",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agent-mediated matchmaking demo (static, synthetic data, template-generated conversations)",
+  "scripts": {
+    "test": "node tests/engine.test.js && node tests/cohort.test.js",
+    "test:ui": "python3 tests/ui_smoke.py"
+  }
+}
