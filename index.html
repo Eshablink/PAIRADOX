@@ -792,7 +792,7 @@ const H={
   goto(t){if(t.dataset.sel)S.selRank=t.dataset.sel,S.selProfile=t.dataset.sel;goto(+t.dataset.v);},
   toggleForm(){S.showForm=!S.showForm;S.formErr='';render();},
   importCohort(){importCohort();},
-  csvExample(){S.bulkCsv='name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText\\n"Participant One","https://www.linkedin.com/in/example1","https://www.instagram.com/example1",yes,"Headline and About text supplied by the person","Bio and captions supplied by the person"';S.bulkMsg='Example only—not a real participant. Replace every field with verified participant-provided data before importing.';render();},
+  csvExample(){S.bulkCsv='name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText\n"Participant One","https://www.linkedin.com/in/example1","https://www.instagram.com/example1",yes,"Headline and About text supplied by the person","Bio and captions supplied by the person"';S.bulkMsg='Example only—not a real participant. Replace every field with verified participant-provided data before importing.';render();},
   selP(t){S.selProfile=t.dataset.v;S.srcOpen=false;render();},
   selRank(t){S.selRank=t.dataset.v;S.rankFilter='all';render();},
   selPair(t){S.selPair=t.dataset.v;S.rwNote='';render();},
