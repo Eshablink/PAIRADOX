@@ -1,0 +1,57 @@
+{
+  "name": "Eskala Thakshil",
+  "instagramUrl": "https://www.instagram.com/thakshil_/",
+  "linkedinUrl": "https://www.linkedin.com/in/eskala-thakshil-6a15ab233",
+  "instagramEvidenceStatus": "Could not retrieve the Instagram page contents in this research pass; no Instagram-derived hobbies or traits are asserted.",
+  "publicSources": [
+    {
+      "url": "https://thaks-folio.vercel.app/",
+      "type": "Personal website",
+      "supportedSignals": [
+        "Computer science studies (as stated on site)",
+        "software development",
+        "AI/ML projects",
+        "coding and algorithm practice",
+        "building student learning/community projects",
+        "continuous learning"
+      ]
+    },
+    {
+      "url": "https://in.linkedin.com/in/eskala-thakshil-6a15ab233",
+      "type": "Public LinkedIn search result",
+      "supportedSignals": [
+        "Computer science education",
+        "Learn with Thaks community",
+        "software/AI project activity",
+        "technical learning and community involvement"
+      ]
+    }
+  ],
+  "candidateProfileDraft": {
+    "hobbiesAndInterests": [
+      "software development",
+      "AI/ML",
+      "coding and algorithm practice",
+      "building side projects",
+      "student community and placement-preparation activities",
+      "continuous learning"
+    ],
+    "personalityAndValues": [
+      "problem-solving orientation (self-described on personal site)",
+      "systems thinking (self-described on personal site)",
+      "data-driven work (self-described on personal site)",
+      "continuous learning (self-described on personal site)"
+    ],
+    "lifestyleAndGoals": [
+      "building and shipping software projects",
+      "career growth in software/AI",
+      "community learning and collaboration"
+    ],
+    "communicationStyle": null,
+    "connectionIntent": null,
+    "preferences": null
+  },
+  "consentStatus": "pending",
+  "dataStatus": "public-source research notes, not yet a consented Pairadox participant record",
+  "note": "These signals are based on the public personal website and LinkedIn search result, not Instagram. Do not treat them as a complete or verified personal profile. Ask Thakshil to review and approve the profile before using it in matchmaking."
+}
