@@ -5,7 +5,7 @@ Each participant is represented by an agent. Agents read only the profile text t
 **Status (verified in the sandbox that built this; re-run on your machine):**
 - Engine tests pass: `node tests/engine.test.js` (6 synthetic people, 15 pairs) and `node tests/cohort.test.js` (missing evidence, edit/removal re-extraction, no duplicate or self pairs, rankings for every participant, 25-person cohort = 300 pairs).
 - A real-browser smoke test (Playwright + Chromium, 1440x900) passes (it also checks the rankings score-band filter, the consent guard on the add form, and reports mobile horizontal overflow; 5px at 390px wide, so mobile is not polished): Pairadox title, no Kindred text, steps 3-4 locked until profiles are confirmed, full run, rankings render, and removing a profile item locks rankings again. Only console error: Google Fonts failed to load because the sandbox had no internet.
-- Not verified: phone/other browsers, real font rendering, the optional Claude rewrite (only its fallback was exercised), GitHub push, deployment. No repository existed in the sandbox; none was created, so no history was touched. No deployment URL exists yet.
+- Not verified: phone/other browsers, real font rendering, the optional Claude rewrite (only its fallback was exercised), GitHub Actions results, and deployment. The project files have now been published to Eshablink/PAIRADOX; the CI and Pages workflows have not yet been confirmed successful. No verified deployment URL is available yet.
 - The six built-in people are **synthetic** and labelled as such. No real participants are included.
 
 ## What is real and what is not
@@ -34,7 +34,7 @@ pip install playwright && playwright install chromium && python3 tests/ui_smoke.
 
 ## Deploy
 
-`.github/workflows/ci.yml` runs the tests and `.github/workflows/pages.yml` publishes `index.html` to GitHub Pages (enable Pages with source "GitHub Actions" first). Neither workflow has been run; no repository has been created or pushed from this project.
+`.github/workflows/ci.yml` runs the Node tests and Playwright UI smoke test. `.github/workflows/pages.yml` publishes `index.html` to GitHub Pages. These workflows have been added to Eshablink/PAIRADOX, but their successful runs and the live deployment are not yet verified. If deployment does not start, enable GitHub Pages with source "GitHub Actions" in repository Settings > Pages.
 
 ```bash
 git init && git add . && git commit -m "Pairadox demo"
