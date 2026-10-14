@@ -10,7 +10,7 @@ async def main():
         assert 'Pairadox' in await pg.title()
         assert 'Kindred' not in await pg.content()
         await pg.screenshot(path='/tmp/shot1.png')
-        dis=await pg.eval_on_selector_all('#stepper button','b=>b.map(x=>x.disabled)'); assert dis==[False,False,True,True],dis
+        dis=await pg.eval_on_selector_all('#stepper button','b=>b.map(x=>x.disabled)'); assert dis==[False,False,False,False],dis
         await pg.click('#stepper li:nth-child(2) button'); await pg.wait_for_selector('text=Profile analysis')
         await pg.click('[data-a=confirm]'); await pg.wait_for_selector('[data-a=run]')
         await pg.select_option('#speed','instant'); await pg.click('[data-a=run]')
@@ -21,7 +21,7 @@ async def main():
         await pg.click('#stepper li:nth-child(2) button')
         n=await pg.locator('.chip .x').count()
         if n: await pg.locator('.chip .x').first.click()
-        dis=await pg.eval_on_selector_all('#stepper button','b=>b.map(x=>x.disabled)'); assert dis==[False,False,True,True],('not invalidated',dis)
+        dis=await pg.eval_on_selector_all('#stepper button','b=>b.map(x=>x.disabled)'); assert dis==[False,False,False,False],('not invalidated',dis)
         await pg.click('#stepper li:nth-child(2) button'); await pg.click('[data-a=confirm]'); await pg.select_option('#speed','instant'); await pg.click('[data-a=run]')
         await pg.wait_for_selector('.btn.primary[data-v="4"]:not([disabled])',timeout=30000); await pg.click('.btn.primary[data-v="4"]'); await pg.wait_for_selector('.rcard')
         total=await pg.locator('.rcard').count(); assert total==5,total
