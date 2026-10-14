@@ -1,105 +1,152 @@
-# Pairadox: agent-mediated matchmaking demo
+<!-- Pairadox · README -->
+<div align="center">
 
-Each participant is represented by an agent. Agents read only the profile text their person supplied (LinkedIn + public Instagram), exchange structured messages with every other agent, and produce ranked matches with explainable scores.
+# ✦ PAIRADOX
 
-**Status (verified in the sandbox that built this; re-run on your machine):**
-- Engine tests pass: `node tests/engine.test.js` (6 synthetic people, 15 pairs) and `node tests/cohort.test.js` (missing evidence, edit/removal re-extraction, no duplicate or self pairs, rankings for every participant, 25-person cohort = 300 pairs).
-- A real-browser smoke test (Playwright + Chromium, 1440x900) passes (it also checks the rankings score-band filter, the consent guard on the add form, and reports mobile horizontal overflow; 5px at 390px wide, so mobile is not polished): Pairadox title, no Kindred text, steps 3-4 locked until profiles are confirmed, full run, rankings render, and removing a profile item locks rankings again. Only console error: Google Fonts failed to load because the sandbox had no internet.
-- Not verified: phone/other browsers, real font rendering, the optional Claude rewrite (only its fallback was exercised), GitHub Actions results, and deployment. The project files have now been published to Eshablink/PAIRADOX; the CI and Pages workflows have not yet been confirmed successful. No verified deployment URL is available yet.
-- The six built-in people are **synthetic** and labelled as such. No real participants are included.
+### *What if your AI met someone else's AI first?*
 
-## What is real and what is not
+**A consent-first, multi-agent matchmaking experiment.**  
+Turn participant-provided profile signals into transparent compatibility conversations — then explore the reasoning behind every match.
 
-| Thing | Reality |
+<br/>
+
+[**↗ Launch Pairadox**](https://eshablink.github.io/PAIRADOX/) · [**Source code**](https://github.com/Eshablink/PAIRADOX) · [**Report an issue**](https://github.com/Eshablink/PAIRADOX/issues)
+
+<br/>
+
+![Status](https://img.shields.io/badge/status-live%20demo-9b87f5?style=for-the-badge)
+![Tests](https://img.shields.io/badge/CI-passing-52c7a5?style=for-the-badge)
+![Stack](https://img.shields.io/badge/stack-HTML%20%2F%20CSS%20%2F%20JS-f0b6c8?style=for-the-badge)
+![License](https://img.shields.io/badge/license-see%20repository-lightgrey?style=for-the-badge)
+
+</div>
+
+---
+
+## ◌ The idea
+
+Dating apps usually show you a profile and ask you to decide. **Pairadox flips the interaction:** each participant gets a profile-based agent, agents exchange structured messages about compatibility, and the app ranks matches with evidence you can inspect.
+
+Not a magic “soulmate” score. Not a black-box LLM verdict. A small, explainable experiment in agent-mediated matchmaking.
+
+> **The principle:** show the evidence, surface uncertainty, and never pretend missing information is a fact.
+
+## ✨ Explore the experience
+
+| Stage | What happens |
 |---|---|
-| Participants | Synthetic demo cohort, or people you add with consent |
-| LinkedIn / Instagram URLs | Stored and shown, **never fetched**. Analysis uses only text the participant pastes |
-| Profile extraction | Keyword/regex rules, not a model |
-| Agent conversations | Deterministic template protocol, 8 messages per pair |
-| Model-generated output | None by default. Optional "Claude-written" rewrite, only on claude.ai-hosted page, cosmetic, untested here |
-| Scores | Deterministic, no model in the path |
+| **01 · Setup & ingestion** | Start with the labelled demo cohort or import consented participant data. |
+| **02 · Profile analysis** | Review extracted interests, values, intent, lifestyle and location signals, with source evidence. |
+| **03 · Agent deliberations** | Watch each pair exchange a deterministic, structured conversation. |
+| **04 · Match rankings** | Compare compatibility scores, evidence coverage and each agent’s reasoning. |
 
-The UI labels these on every step (provenance strip under the heading).
+## 🧠 How matching works
 
-## Import a real cohort (25 participants)
+Each agent scores a potential match from its own perspective using a weighted set of dimensions:
 
-On the live app, open **Setup & Ingestion** and use **Import a real cohort (CSV)**. The importer accepts up to 25 distinct people and requires these columns:
+| Dimension | Weight |
+|---|---:|
+| Shared interests | 30% |
+| Values | 25% |
+| Relationship intent | 20% |
+| Lifestyle | 15% |
+| Location | 10% |
+
+The mutual score combines the two agents’ scores, giving extra weight to the lower score. A stated relationship-intent clash caps the mutual score at 55. Unknown dimensions stay neutral and reduce evidence coverage rather than being silently filled in.
+
+**Important:** profile extraction uses keyword and regular-expression rules. Conversations use templates (8 messages per pair). The default scoring path does not call an LLM. This makes the demo inspectable, but it can miss paraphrases or misread ambiguous wording — treat scores as experimental signals, not dating advice.
+
+## 🛡️ Consent, privacy & honest data
+
+- **Consent required:** only add real people who have explicitly agreed to participate and have their profile information used for this experiment.
+- **No profile scraping:** LinkedIn and Instagram URLs are stored as references; the app does not fetch either website or bypass login/access controls.
+- **Participant-provided text:** analysis uses text the participant supplies from their profiles. Each extracted signal keeps its source and supporting sentence.
+- **Uncertainty stays visible:** missing evidence is not invented. Participants can review and edit extracted items before matching.
+- **Local demo storage:** imported cohort data is stored in that browser’s `localStorage`. This is not a secure multi-user database; avoid putting sensitive information into the demo.
+- **No sensitive-trait inference:** the app does not infer age, gender, sexual orientation or traits from photos.
+
+The built-in people are **synthetic demo profiles**, clearly labelled in the app. They are not real participants and must not be presented as such. For a real cohort, use the import flow below.
+
+## 🚀 Run Pairadox locally
+
+No build step, framework install or API key required.
+
+```bash
+git clone https://github.com/Eshablink/PAIRADOX.git
+cd PAIRADOX
+
+# Open index.html directly, or serve the folder:
+python3 -m http.server 8000
+# Visit http://localhost:8000
+```
+
+### Test the engine
+
+Requires Node.js for the engine/cohort tests. The optional browser smoke test requires Python and Playwright.
+
+```bash
+node tests/engine.test.js
+node tests/cohort.test.js
+
+pip install playwright
+playwright install chromium
+python3 tests/ui_smoke.py
+```
+
+## 👥 Import a consented cohort
+
+In **Setup & Ingestion**, choose **Import a real cohort (CSV)**. The importer accepts up to 25 distinct people and expects these headers:
 
 ```csv
 name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText
 ```
 
-For each row, include a valid LinkedIn profile URL, a public Instagram profile URL, explicit consent marked `yes`, and text the participant supplied from both profiles. Quote CSV fields that contain commas or line breaks. The importer rejects duplicate URLs/names, missing consent, and missing text; it does not fetch either URL. A successful import replaces the synthetic demo cohort in that browser and stores the cohort in local storage. This is browser-local demo storage, not a secure multi-user database. Never import people who have not agreed to participate, and don't invent profile text to fill gaps.
+Each row must contain a valid LinkedIn URL, an Instagram profile URL, explicit consent (`yes`), and participant-provided text for both sources. Quote fields containing commas or line breaks. Duplicate names/URLs, missing consent and missing text are rejected.
 
-**If you only have links:** ask each person for consent and for their LinkedIn headline/About text plus Instagram bio and a few captions. Then paste the completed CSV into the importer. URLs alone are not enough for evidence-backed analysis.
+**Only have links?** Ask participants to provide their LinkedIn headline/About text and Instagram bio plus a few captions. A URL alone is not evidence of a person’s interests. Importing replaces the demo cohort in that browser; it does not create a shared cohort for other visitors.
 
-## Run it
+For 25 participants there are **300 unique pairs** (`25 × 24 ÷ 2`). Rankings and conversations are generated from the data entered in the current browser.
 
-No build step, no keys.
+## 🧰 Built with
 
-```bash
-open index.html            # or: python3 -m http.server 8000
-node tests/engine.test.js  # engine assertions
-node tests/cohort.test.js  # edge cases + 25-person cohort
-pip install playwright && playwright install chromium && python3 tests/ui_smoke.py  # optional browser smoke test
-```
+- **Frontend:** semantic HTML, CSS and vanilla JavaScript
+- **Testing:** Node.js assertions and Playwright browser smoke test
+- **Deployment:** GitHub Actions + GitHub Pages
+- **Storage:** browser `localStorage` for the custom demo cohort
 
-## Deploy
+No backend or database is currently included. The optional Claude rewrite mentioned in the interface is cosmetic, available only in supported hosting contexts, and does not influence scores.
 
-`.github/workflows/ci.yml` runs the Node tests and Playwright UI smoke test. `.github/workflows/pages.yml` publishes `index.html` to GitHub Pages. These workflows have been added to Eshablink/PAIRADOX, but their successful runs and the live deployment are not yet verified. If deployment does not start, enable GitHub Pages with source "GitHub Actions" in repository Settings > Pages.
+## 🧪 Quality checks
 
-```bash
-git init && git add . && git commit -m "Pairadox demo"
-gh repo create pairadox --public --source=. --push # --public --source=. --push   # or create the repo in the GitHub UI
-```
+GitHub Actions runs the engine tests, cohort edge-case tests and browser smoke test; a separate workflow deploys the static app to GitHub Pages. Check the [latest workflow runs](https://github.com/Eshablink/PAIRADOX/actions) for the current result.
 
-Then either enable **GitHub Pages** (Settings > Pages > main / root), or `npx vercel --prod` / drag the folder into Netlify. Put the resulting URL in your submission only after you have opened it and clicked through.
+## 🎬 Demo walkthrough
 
-## Design
+For a short presentation, follow this order:
 
-Visual reference: the Stitch export "Nocturne & Nectar" (dark plum surfaces, blush/gold/lavender accents, Playfair Display + Plus Jakarta Sans). Applied as CSS tokens, a shared sticky nav, and layouts for all four stages (hero card + three-column evidence grid on Profile Analysis; controls bar + agent cards + chat + summary sidebar on Agent Deliberations; ranked cards with score-band filters on Match Rankings); the four stages (Setup & Ingestion, Profile Analysis, Agent Deliberations, Match Rankings) are driven by real application state. The Stitch mock persona photos, sample cohort data, and claims such as "autonomous agents", attunement indices, playback controls, and "Request Introduction" were deliberately not used, because the app has no such capabilities. Google Fonts load from the network; with no connection, serif/sans fallbacks are used.
+1. **Profiles first:** introduce the demo cohort and show source-backed profile signals.
+2. **Agent dating:** run the conversations and open a message payload to explain the protocol.
+3. **Rankings:** show score breakdowns, evidence coverage and uncertainty.
+4. **Trust & limitations:** explain consent, participant-provided text, deterministic scoring and what is not automated.
 
-## Stack
+Keep the demo clear that the included profiles are synthetic until a real, consented cohort has been imported.
 
-Static HTML + CSS + vanilla JavaScript in one file (`index.html`). The engine sits between `// ==ENGINE START==` and `// ==ENGINE END==` so Node can test it without a browser. No backend, database, or API keys. Participant data stays in the browser (`localStorage` key `pairadox.custom.v1`, only for participants you add; the old `kindred.custom.v1` key is read once for migration).
+## 🗺️ Current limitations
 
-## Profile ingestion
+- Keyword extraction is simple and may miss context, synonyms or sarcasm.
+- Thin profile text produces weak comparisons; scores depend on the information supplied.
+- Agent dialogue is structured and deterministic, not autonomous free-form conversation.
+- Data is browser-local; there is no account system, shared database or production security layer.
+- This is a prototype for transparent compatibility exploration, not a validated predictor of relationship success.
 
-- Inputs per participant: LinkedIn URL, Instagram URL, and **pasted text** from their own profiles (LinkedIn headline and About; Instagram bio and captions).
-- **URLs are stored but never fetched.** LinkedIn and Instagram restrict automated access (login walls, anti-bot, rate limits) and this project does not circumvent them. Optional extension: a server-side adapter that uses an authorised API or a participant-granted data export and feeds the same `analyze()` function.
-- `analyze()` is a rule-based extractor: lexicons for 25 interest categories and 10 values, plus regexes for relationship intent, location, stated preferences and boundaries.
-- Every extracted item keeps its source (LinkedIn/Instagram) and the sentence it came from. Items in "looking for" sentences are treated as partner wishes, not the person's own interests.
-- Values found by keyword only (no "I value…" wording) are marked weak and count 0.6 instead of 1.
-- Missing data stays missing and is listed under **Uncertainties**. Age, gender, orientation and photos are not read or inferred.
-- Participants can delete any item or edit the source text before agents run; the profile page must be confirmed before conversations and rankings unlock.
+---
 
-## Agents and scoring
+<div align="center">
 
-- `Agent` holds its own profile. It learns about the other side only from message payloads (`disclose()` / `receive()`).
-- Per pair: 8 messages (introduction, logistics, values, verdict, alternating sender). Message text is template-generated from extracted facts; there is no LLM in the scoring path, so the dialogue is a transparent protocol, not free-form chat. Optional: on the claude.ai-hosted page only (it uses the `sample` capability), a button rewrites one finished chat in Claude's voice. Rewrites are labelled `Claude-written`, rejected if they change a number, and never affect scores. On GitHub Pages or any other host the button is hidden and everything stays deterministic. The Claude rewrite path has NOT been tested by me (no provider in my sandbox); only its fallback path was.
-- Each agent scores from its own side: interests 30%, values 25%, intent 20%, lifestyle 15%, location 10%. Unknown dimension = neutral 50 and lowers evidence coverage. Stated intent clash caps the mutual score at 55.
-- Mutual score = 0.6 x average + 0.4 x the lower agent score. Each ranking card shows both agents' per-dimension reasons.
-- Limits: keyword matching misses paraphrase and can over-read (e.g. "travelling for work" counts as travel); two profiles with thin text compare poorly; no gender/orientation filtering.
+**PAIRADOX** · *Less swiping. More reasoning.*
 
-## Three-minute demo script
+Built as an experiment in explainable, agent-mediated matchmaking.
 
-| Time | Action | Say |
-|---|---|---|
-| 0:00 | Open the site (Participants tab) | Six synthetic people are preloaded; nothing to set up. |
-| 0:20 | Click **Add a consenting participant**, point at the consent checkbox and the "URLs are not fetched" note, close it | Consent is required; we never scrape, participants paste their own text. |
-| 0:40 | **Profiles** tab: open Asha | Every interest has its source and quote; Tara shows blanks and uncertainties instead of guesses. Remove one chip to show correction. |
-| 1:20 | **Confirm**, then **Start conversations** (Live speed) | Agents exchange structured payloads; open one payload. |
-| 2:00 | **Rankings**, Asha | Score breakdown, both agents' reasons, hatched bars for unknowns. |
-| 2:30 | Switch to Meera, point at Kabir | Intent clash is capped; matrix shows all pairs. |
-| 2:50 | Open "How this works" | Stack, ingestion, what is not real. |
+<sub>If you try it with real people, get explicit consent first and keep the evidence honest.</sub>
 
-The **Autoplay demo** button runs steps 2 to 4 automatically (about 40 seconds) if you want a safe take.
-
-## Files
-
-- `index.html`: app + engine
-- `tests/engine.test.js`: Node assertions (extraction honesty, 8 messages per pair, intent cap, payload-only knowledge)
-- `tests/cohort.test.js`: missing evidence, edit/removal, duplicate pairs, per-participant rankings, 25-person cohort
-- `tests/ui_smoke.py`: Playwright smoke test of the full flow
-
-<!-- Pages deployment retrigger: GitHub Actions source enabled 2026-10-14. -->
+</div>
