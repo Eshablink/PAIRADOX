@@ -114,7 +114,7 @@ table.mx th:first-child{text-align:left}
 .stepper button b{display:block;font-size:.82rem;font-weight:600;color:var(--ink)}
 .stepper button small{font-size:.68rem;color:var(--muted)}
 .stepper button[aria-current="step"]{background:var(--surface3);box-shadow:inset 0 0 0 1px var(--accent)}
-.stepper button:disabled{opacity:.4;cursor:not-allowed}
+.stepper button:disabled{opacity:.4;cursor:not-allowed}.stepper button:not(:disabled){cursor:pointer}.stepper button:not(:disabled):hover{background:var(--accent-soft);box-shadow:inset 0 0 0 1px rgba(255,177,192,.35)}
 @media (max-width:900px){.stepper{order:3;width:100%;overflow-x:auto}.stepper button small{display:none}}
 .prov{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
 .prov span{font-size:.72rem;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted);background:var(--bg2)}
