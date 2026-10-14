@@ -67,12 +67,12 @@ The mutual score combines the two agents’ scores, giving extra weight to the l
 
 The built-in people are **synthetic demo profiles**, clearly labelled in the app. They are not real participants and must not be presented as such. For a real cohort, use the import flow below.
 
-## 📦 Research datasets (clearly separated from live participants)
+## 📦 Research profile list (41 entries; not the live cohort)
 
-- [40-profile synthetic test dataset](data/pairadox-40-synthetic-profiles.csv): fields are explicitly fictional test values. Names are included only to match the supplied prototype document; do not treat ages, interests, personality, lifestyle, intent, or preferences as facts about those people. This file is a research/QA asset and is **not automatically loaded into the live cohort**.
-- [Thakshil public-profile research notes](data/thakshil-public-profile-research.json): this is a separate candidate note, not an imported or consented participant. The Instagram page could not be retrieved in this research pass, so the draft signals are sourced from the public personal website and LinkedIn search result instead. Communication style, connection intent, and preferences remain unknown. Get Thakshil's review and consent before using these notes in matchmaking.
+- [41-profile research list](data/pairadox-40-synthetic-profiles.csv): entries 1–40 contain fictional QA attributes from the supplied test document and are **not verified biographies**. Entry 41 is Thakshil's research draft, combining technical signals from his public personal website and LinkedIn search result with friend-provided observations. His Instagram page could not be retrieved, so no Instagram-derived claims are made.
+- Thakshil's age, gender, connection intent, and preferences are left blank because they have not been established. His friend-described education and social/support style are identified in the row's source notes. His consent status remains **pending**.
 
-Do not use the synthetic CSV as real participant evidence or mark fictional attributes as verified. The app's real-cohort importer continues to require participant consent and participant-provided text.
+The list now has 41 entries in one place, but it is a research/QA asset and is **not automatically loaded into the live cohort**. Before Thakshil is used for real matchmaking, have him review the profile and explicitly agree to participate. The app's real-cohort importer continues to require consent and participant-provided text.
 
 ## 🚀 Run Pairadox locally
 
