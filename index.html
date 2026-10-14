@@ -523,15 +523,57 @@ const hue=id=>{let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))%360;return h;}
 const av=p=>`<span class="av" style="--h:${hue(p.id)}" aria-hidden="true">${esc(p.name[0])}</span>`;
 const srcBadge=s=>`<span class="src">${esc(s)}</span>`;
 
-let S={participants:[],convos:{},step:1,confirmed:false,done:false,running:false,cancel:false,speed:'fast',selProfile:'asha',selRank:'asha',selPair:null,livePair:null,live:[],showForm:false,formErr:'',autoplay:false};
+let S={participants:[],convos:{},step:1,confirmed:false,done:false,running:false,cancel:false,speed:'fast',selProfile:'asha',selRank:'asha',selPair:null,livePair:null,live:[],showForm:false,formErr:'',autoplay:false,bulkCsv:'',bulkMsg:''};
 
 function loadParticipants(){
-  let custom=[];
-  try{custom=JSON.parse(localStorage.getItem(STORE)||localStorage.getItem(LEGACY_STORE)||'[]');}catch(e){custom=[];}
-  S.participants=[...SYN.map(p=>({...p,removed:[]})),...custom];
+  let custom=[],realMode=false;
+  try{custom=JSON.parse(localStorage.getItem(STORE)||localStorage.getItem(LEGACY_STORE)||'[]');realMode=localStorage.getItem('pairadox.realCohortMode.v1')==='true';}catch(e){custom=[];}
+  S.participants=realMode?custom:[...SYN.map(p=>({...p,removed:[]})),...custom];
   S.participants.forEach(p=>p.analysis=analyze(p));
 }
-function saveCustom(){try{localStorage.setItem(STORE,JSON.stringify(S.participants.filter(p=>!p.synthetic).map(({analysis,...r})=>r)));}catch(e){}}
+function saveCustom(){try{
+  const custom=S.participants.filter(p=>!p.synthetic).map(({analysis,...r})=>r);
+  localStorage.setItem(STORE,JSON.stringify(custom));
+  localStorage.setItem('pairadox.realCohortMode.v1',String(!S.participants.some(p=>p.synthetic)));
+}catch(e){}}
+function parseCsv(text){
+  const rows=[];let row=[],field='',quoted=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){if(ch==='"'&&text[i+1]==='"'){field+='"';i++;}else if(ch==='"')quoted=false;else field+=ch;}
+    else if(ch==='"'&&field==='')quoted=true;
+    else if(ch===','){row.push(field);field='';}
+    else if(ch==='\\n'){row.push(field);if(row.some(v=>v.trim()))rows.push(row);row=[];field='';}
+    else if(ch==='\\r'){}
+    else field+=ch;
+  }
+  row.push(field);if(row.some(v=>v.trim()))rows.push(row);
+  return rows;
+}
+function importCohort(){
+  const parsed=parseCsv(S.bulkCsv.trim());
+  if(parsed.length<2){S.bulkMsg='Paste a CSV header and at least one participant row.';return render();}
+  const headers=parsed[0].map(h=>h.trim().replace(/^\\uFEFF/,''));
+  const required=['name','linkedinUrl','instagramUrl','consent','linkedinText','instagramText'];
+  const missing=required.filter(h=>!headers.includes(h));
+  if(missing.length){S.bulkMsg='Missing CSV columns: '+missing.join(', ');return render();}
+  const at=Object.fromEntries(required.map(h=>[h,headers.indexOf(h)]));
+  const records=parsed.slice(1).map((r,i)=>({line:i+2,name:(r[at.name]||'').trim(),linkedinUrl:(r[at.linkedinUrl]||'').trim(),instagramUrl:(r[at.instagramUrl]||'').trim(),consent:(r[at.consent]||'').trim().toLowerCase(),linkedinText:(r[at.linkedinText]||'').trim(),instagramText:(r[at.instagramText]||'').trim()}));
+  if(records.length>25){S.bulkMsg='Import is limited to 25 real participants per cohort.';return render();}
+  const errors=[],seen=new Set();
+  records.forEach(r=>{
+    if(!r.name)errors.push('Line '+r.line+': name is required.');
+    if(!/^https?:\\/\\/([a-z0-9-]+\\.)?linkedin\\.com\\/.+/i.test(r.linkedinUrl))errors.push('Line '+r.line+': valid LinkedIn profile URL required.');
+    if(!/^https?:\\/\\/([a-z0-9-]+\\.)?instagram\\.com\\/.+/i.test(r.instagramUrl))errors.push('Line '+r.line+': valid Instagram profile URL required.');
+    if(!['yes','true','consented'].includes(r.consent))errors.push('Line '+r.line+': consent must be explicitly marked yes.');
+    if(!r.linkedinText||!r.instagramText)errors.push('Line '+r.line+': paste participant-provided LinkedIn AND Instagram text; URLs alone are not fetched.');
+    for(const url of [r.linkedinUrl,r.instagramUrl]){const key=url.toLowerCase();if(key&&seen.has(key))errors.push('Line '+r.line+': duplicate profile URL.');seen.add(key);}
+  });
+  if(errors.length){S.bulkMsg='Nothing imported. Fix these issues first: '+errors.slice(0,8).join(' ')+(errors.length>8?' And '+(errors.length-8)+' more.':'');return render();}
+  const names=new Set();for(const r of records){const k=r.name.toLowerCase();if(names.has(k)){S.bulkMsg='Nothing imported. Duplicate participant name: '+r.name;return render();}names.add(k);}
+  S.participants=records.map((r,i)=>{const p={id:'real-'+(i+1)+'-'+Date.now().toString(36),name:r.name,linkedinUrl:r.linkedinUrl,instagramUrl:r.instagramUrl,linkedinText:r.linkedinText,instagramText:r.instagramText,synthetic:false,consent:true,removed:[]};p.analysis=analyze(p);return p;});
+  saveCustom();invalidate();S.step=1;S.selProfile=S.participants[0].id;S.selRank=S.participants[0].id;S.bulkMsg='Imported '+S.participants.length+' consented real participants. The synthetic demo cohort is replaced in this browser. Confirm each record and run the 300 pairings.';render();window.scrollTo({top:0});
+}
 const byId=id=>S.participants.find(p=>p.id===id);
 const pk=(a,b)=>a.id+'|'+b.id;
 const allPairs=()=>pairsOf(S.participants);
@@ -564,6 +606,13 @@ function vStep1(){
     <button class="btn ghost" data-a="toggleForm">${S.showForm?'Close form':'Add a consenting participant'}</button></div></section>
   ${prov()}
   ${syn?`<div class="notice warn"><b>Demo cohort loaded.</b> The six people below are <b>synthetic</b>, written for this demo, with placeholder URLs that are not real profiles. Nothing is retrieved from LinkedIn or Instagram.</div>`:''}
+  <section class="panel" style="margin:20px 0"><h2>Import a real cohort (CSV)</h2>
+    <p class="muted small">Paste one CSV with 25 real participants. Required columns: <code>name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText</code>. Use quotes around text containing commas or line breaks. Mark <code>consent</code> as <code>yes</code> only after the person has agreed. Both text fields must be supplied by the participant; URLs alone are not fetched.</p>
+    <label for="bulk-csv">Cohort CSV</label><textarea id="bulk-csv" style="min-height:190px" placeholder="name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText&#10;&quot;Participant One&quot;,&quot;https://www.linkedin.com/in/example1&quot;,&quot;https://www.instagram.com/example1&quot;,yes,&quot;Headline and About text supplied by the person&quot;,&quot;Bio and captions supplied by the person&quot;">${esc(S.bulkCsv)}</textarea>
+    <div class="actions"><button class="btn primary" data-a="importCohort">Validate &amp; import real cohort</button><button class="btn" data-a="csvExample">Load CSV example</button></div>
+    ${S.bulkMsg?`<div class="notice ${S.bulkMsg.startsWith('Imported ')?'':'warn'}" role="status">${esc(S.bulkMsg)}</div>`:''}
+    <p class="small muted">Privacy: imported records are saved in this browser's local storage. This is a local demo, not a secure participant database. Don't paste sensitive details; collect only information participants agree to share.</p>
+  </section>
   ${S.showForm?vForm():''}
   <div class="grid cards">${S.participants.map(p=>`<div class="card">
     <div class="row">${av(p)}<div><h3 style="margin:0">${esc(p.name)}</h3></div>${p.synthetic?'<span class="badge syn">Synthetic</span>':'<span class="badge ok">Consented</span>'}</div>
@@ -742,6 +791,8 @@ async function goto(n){
 const H={
   goto(t){if(t.dataset.sel)S.selRank=t.dataset.sel,S.selProfile=t.dataset.sel;goto(+t.dataset.v);},
   toggleForm(){S.showForm=!S.showForm;S.formErr='';render();},
+  importCohort(){importCohort();},
+  csvExample(){S.bulkCsv='name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText\\n"Participant One","https://www.linkedin.com/in/example1","https://www.instagram.com/example1",yes,"Headline and About text supplied by the person","Bio and captions supplied by the person"';S.bulkMsg='Example only—not a real participant. Replace every field with verified participant-provided data before importing.';render();},
   selP(t){S.selProfile=t.dataset.v;S.srcOpen=false;render();},
   selRank(t){S.selRank=t.dataset.v;S.rankFilter='all';render();},
   selPair(t){S.selPair=t.dataset.v;S.rwNote='';render();},
@@ -797,6 +848,7 @@ const H={
 };
 function render2(){render();}
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;if(t.tagName==='A')e.preventDefault();H[t.dataset.a]?.(t,e);});
+document.addEventListener('input',e=>{if(e.target.id==='bulk-csv')S.bulkCsv=e.target.value;});
 document.addEventListener('change',e=>{if(e.target.id==='speed')S.speed=e.target.value;});
 
 loadParticipants();render();
