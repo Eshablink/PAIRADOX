@@ -21,6 +21,18 @@ Each participant is represented by an agent. Agents read only the profile text t
 
 The UI labels these on every step (provenance strip under the heading).
 
+## Import a real cohort (25 participants)
+
+On the live app, open **Setup & Ingestion** and use **Import a real cohort (CSV)**. The importer accepts up to 25 distinct people and requires these columns:
+
+```csv
+name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText
+```
+
+For each row, include a valid LinkedIn profile URL, a public Instagram profile URL, explicit consent marked `yes`, and text the participant supplied from both profiles. Quote CSV fields that contain commas or line breaks. The importer rejects duplicate URLs/names, missing consent, and missing text; it does not fetch either URL. A successful import replaces the synthetic demo cohort in that browser and stores the cohort in local storage. This is browser-local demo storage, not a secure multi-user database. Never import people who have not agreed to participate, and don't invent profile text to fill gaps.
+
+**If you only have links:** ask each person for consent and for their LinkedIn headline/About text plus Instagram bio and a few captions. Then paste the completed CSV into the importer. URLs alone are not enough for evidence-backed analysis.
+
 ## Run it
 
 No build step, no keys.
