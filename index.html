@@ -548,7 +548,7 @@ function prov(extra){
 }
 /* stepper */
 const STEPS=[['Setup & Ingestion','Participants'],['Profile Analysis','Evidence & edits'],['Agent Deliberations','Template protocol'],['Match Rankings','Explainable scores']];
-function unlocked(n){return n<=2||(n===3&&S.confirmed)||(n===4&&S.done);}
+function unlocked(n){return n>=1&&n<=4;}
 function vStepper(){
   $('#stepper').innerHTML=STEPS.map((l,i)=>`<li><button data-a="goto" data-v="${i+1}" ${S.step===i+1?'aria-current="step"':''} ${unlocked(i+1)?'':'disabled'}><b>0${i+1} ${l[0]}</b><small>${l[1]}</small></button></li>`).join('');
 }
@@ -727,7 +727,18 @@ function render(){
   const banner=S.autoplay?`<div class="banner" role="status"><span>Autoplay is running</span><button class="btn" data-a="stopAuto" style="padding:2px 10px">Stop</button></div>`:'';
   $('#app').innerHTML=banner+v;
 }
-function goto(n){if(!unlocked(n))return;S.step=n;render();window.scrollTo({top:0});}
+async function goto(n){
+  if(n<1||n>4)return;
+  if(n===3){S.confirmed=true;S.step=3;render();window.scrollTo({top:0});return;}
+  if(n===4){
+    if(S.done){S.step=4;render();window.scrollTo({top:0});return;}
+    S.confirmed=true;S.step=3;S.speed='instant';render();window.scrollTo({top:0});
+    await runAll();
+    if(S.done){S.step=4;render();window.scrollTo({top:0});}
+    return;
+  }
+  S.step=n;render();window.scrollTo({top:0});
+}
 const H={
   goto(t){if(t.dataset.sel)S.selRank=t.dataset.sel,S.selProfile=t.dataset.sel;goto(+t.dataset.v);},
   toggleForm(){S.showForm=!S.showForm;S.formErr='';render();},
