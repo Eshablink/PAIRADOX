@@ -543,8 +543,8 @@ function parseCsv(text){
     if(quoted){if(ch==='"'&&text[i+1]==='"'){field+='"';i++;}else if(ch==='"')quoted=false;else field+=ch;}
     else if(ch==='"'&&field==='')quoted=true;
     else if(ch===','){row.push(field);field='';}
-    else if(ch==='\\n'){row.push(field);if(row.some(v=>v.trim()))rows.push(row);row=[];field='';}
-    else if(ch==='\\r'){}
+    else if(ch==='\n'){row.push(field);if(row.some(v=>v.trim()))rows.push(row);row=[];field='';}
+    else if(ch==='\r'){}
     else field+=ch;
   }
   row.push(field);if(row.some(v=>v.trim()))rows.push(row);
@@ -553,7 +553,7 @@ function parseCsv(text){
 function importCohort(){
   const parsed=parseCsv(S.bulkCsv.trim());
   if(parsed.length<2){S.bulkMsg='Paste a CSV header and at least one participant row.';return render();}
-  const headers=parsed[0].map(h=>h.trim().replace(/^\\uFEFF/,''));
+  const headers=parsed[0].map(h=>h.trim().replace(/^\uFEFF/,''));
   const required=['name','linkedinUrl','instagramUrl','consent','linkedinText','instagramText'];
   const missing=required.filter(h=>!headers.includes(h));
   if(missing.length){S.bulkMsg='Missing CSV columns: '+missing.join(', ');return render();}
@@ -563,8 +563,8 @@ function importCohort(){
   const errors=[],seen=new Set();
   records.forEach(r=>{
     if(!r.name)errors.push('Line '+r.line+': name is required.');
-    if(!/^https?:\\/\\/([a-z0-9-]+\\.)?linkedin\\.com\\/.+/i.test(r.linkedinUrl))errors.push('Line '+r.line+': valid LinkedIn profile URL required.');
-    if(!/^https?:\\/\\/([a-z0-9-]+\\.)?instagram\\.com\\/.+/i.test(r.instagramUrl))errors.push('Line '+r.line+': valid Instagram profile URL required.');
+    if(!/^https?:\/\/([a-z0-9-]+\.)?linkedin\.com\/.+/i.test(r.linkedinUrl))errors.push('Line '+r.line+': valid LinkedIn profile URL required.');
+    if(!/^https?:\/\/([a-z0-9-]+\.)?instagram\.com\/.+/i.test(r.instagramUrl))errors.push('Line '+r.line+': valid Instagram profile URL required.');
     if(!['yes','true','consented'].includes(r.consent))errors.push('Line '+r.line+': consent must be explicitly marked yes.');
     if(!r.linkedinText||!r.instagramText)errors.push('Line '+r.line+': paste participant-provided LinkedIn AND Instagram text; URLs alone are not fetched.');
     for(const url of [r.linkedinUrl,r.instagramUrl]){const key=url.toLowerCase();if(key&&seen.has(key))errors.push('Line '+r.line+': duplicate profile URL.');seen.add(key);}
