@@ -1187,7 +1187,7 @@ function vStep2(){
   <section class="hcard"><span class="av big" style="--h:${hue(p.id)}" aria-hidden="true">${esc(p.name[0])}</span>
     <div><h2>${esc(p.name)}</h2>
       <p class="sub">${a.headline?`<span class="quote">${esc(a.headline)}</span> ${srcBadge('LinkedIn')}`:'<span class="muted">No headline provided</span>'}</p>
-      <div><span class="tag gold">${a.location?esc(a.location.value)+' '+srcBadge(a.location.src):'Location not stated'}</span><span class="tag rose">${a.intent?esc(a.intent.label)+' '+srcBadge(a.intent.src):'Intent not stated; agents will not guess'}</span>${p.synthetic?'<span class="badge syn">Synthetic profile</span>':'<span class="badge ok">Consented participant</span>'}</div>
+      <div><span class="tag gold">${a.location?esc(a.location.value)+' '+srcBadge(a.location.src):'Location not stated'}</span><span class="tag rose">${a.intent?esc(a.intent.label)+' '+srcBadge(a.intent.src):'Intent not stated; agents will not guess'}</span>${p.researchOnly?'<span class="badge">Research draft · consent pending</span>':p.synthetic?'<span class="badge syn">Synthetic QA profile</span>':'<span class="badge ok">Consented participant</span>'}</div>
       ${a.intent?`<p class="small" style="margin:6px 0 0"><span class="quote">“${esc(trunc(a.intent.evidence,140))}”</span></p>`:''}</div>
     <div class="row"><button class="btn" data-a="openSrc">Edit source text</button></div></section>
   <div class="curate"><span><b>Curate extracted facts</b> · remove anything that is not accurate about ${esc(first)}; changing a profile re-locks later stages.</span><span>${a.interests.length} interests · ${a.values.length} values · LinkedIn ${a.counts.LinkedIn} / Instagram ${a.counts.Instagram} sentences read</span></div>
