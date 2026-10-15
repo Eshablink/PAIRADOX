@@ -7,6 +7,16 @@ const assert=require('assert');
 (async()=>{
   const P=api.SYN.map(p=>({...p,analysis:api.analyze(p)}));
   const g=id=>P.find(p=>p.id===id);
+  // Negation and missing-evidence regressions
+  const negative={id:'negative',name:'Negative example',linkedinText:'Designer\\nI do not like hiking and I am not interested in running.',instagramText:'No interest in gardening.',removed:[]};
+  const na=api.analyze(negative);
+  assert(!na.interests.some(i=>['hiking','running','gardening'].includes(i.key)),'explicitly rejected interests must not be extracted');
+  const positive={id:'positive',name:'Positive example',linkedinText:'Designer\\nI like hiking and running.',instagramText:'',removed:[]};
+  const pa=api.analyze(positive);
+  assert(pa.interests.some(i=>i.key==='hiking')&&pa.interests.some(i=>i.key==='running'),'positive interest mentions remain extractable');
+  const allUnknown=await api.converse({...negative,analysis:na},{...negative,id:'negative2',name:'Negative two',analysis:na},async()=>{});
+  assert.equal(allUnknown.ev.negative.total,50,'all-unknown dimensions use a neutral fallback, clearly marked by zero coverage');
+  assert.equal(allUnknown.ev.negative.coverage,0,'all-unknown dimensions have zero evidence coverage');
   // extraction honesty
   assert(g('tara').analysis.values.length===0,'Tara has no stated values');
   assert(g('tara').analysis.intent===null && g('tara').analysis.location===null,'Tara intent/location stay unknown');
