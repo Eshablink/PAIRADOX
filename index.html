@@ -308,7 +308,7 @@ function analyze(p){
     // This is intentionally narrow; sarcasm and nuanced negation still need review by the participant.
     const rejects=re=>{
       const m=re.exec(t); if(!m) return false;
-      const before=t.slice(Math.max(0,m.index-55),m.index);
+      const before=t.slice(0,m.index).split(/[.!?;\\n]/).pop().slice(-100);
       return /(?:do not|don't|does not|doesn't|did not|didn't|never|not into|not interested in|don't like|doesn't like|do not like|does not like|don't enjoy|doesn't enjoy|not a fan of|no interest in|dislike|dislikes|hate|hates|avoid|avoids)(?:\s+\w+){0,3}\s*$/i.test(before);
     };
     for(const [k,d] of Object.entries(LEX)) if(d.re.test(t) && !rejects(d.re)) addHit(interests,k,d.label,s,false);
