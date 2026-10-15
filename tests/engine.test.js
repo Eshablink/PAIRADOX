@@ -8,10 +8,10 @@ const assert=require('assert');
   const P=api.SYN.map(p=>({...p,analysis:api.analyze(p)}));
   const g=id=>P.find(p=>p.id===id);
   // Negation and missing-evidence regressions
-  const negative={id:'negative',name:'Negative example',linkedinText:'Designer\\nI do not like hiking and I am not interested in running.',instagramText:'No interest in gardening.',removed:[]};
+  const negative={id:'negative',name:'Negative example',linkedinText:'Designer\nI do not like hiking and I am not interested in running.',instagramText:'No interest in gardening.',removed:[]};
   const na=api.analyze(negative);
   assert(!na.interests.some(i=>['hiking','running','gardening'].includes(i.key)),'explicitly rejected interests must not be extracted');
-  const positive={id:'positive',name:'Positive example',linkedinText:'Designer\\nI like hiking and running.',instagramText:'',removed:[]};
+  const positive={id:'positive',name:'Positive example',linkedinText:'Designer\nI like hiking and running.',instagramText:'',removed:[]};
   const pa=api.analyze(positive);
   assert(pa.interests.some(i=>i.key==='hiking')&&pa.interests.some(i=>i.key==='running'),'positive interest mentions remain extractable');
   const allUnknown=await api.converse({...negative,analysis:na},{...negative,id:'negative2',name:'Negative two',analysis:na},async()=>{});
