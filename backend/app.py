@@ -45,6 +45,35 @@ class Participant(StrictModel):
     eligibility: Eligibility
 
 
+class ScoreRequest(StrictModel):
+    dimension_scores: dict[str, float] = Field(min_length=1, max_length=5)
+    known_dimensions: list[str] = Field(min_length=0, max_length=5)
+    weights: dict[str, float] = Field(min_length=1, max_length=5)
+
+    @field_validator("dimension_scores")
+    @classmethod
+    def validate_scores(cls, values: dict[str, float]) -> dict[str, float]:
+        if any(not 0 <= v <= 100 for v in values.values()):
+            raise ValueError("dimension scores must be between 0 and 100")
+        return values
+
+    @field_validator("weights")
+    @classmethod
+    def validate_weights(cls, values: dict[str, float]) -> dict[str, float]:
+        if any(v < 0 for v in values.values()):
+            raise ValueError("weights cannot be negative")
+        if abs(sum(values.values()) - 1.0) > 0.001:
+            raise ValueError("weights must sum to 1.0")
+        return values
+
+
+class ScoreResult(StrictModel):
+    score: int
+    evidence_coverage: int
+    known_dimensions: list[str]
+    excluded_dimensions: list[str]
+
+
 class PairEligibilityRequest(StrictModel):
     participants: list[Participant] = Field(min_length=2, max_length=200)
 
@@ -91,6 +120,24 @@ def pair_is_eligible(a: Participant, b: Participant) -> tuple[bool, str]:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "pairadox-api"}
+
+
+@app.post("/score", response_model=ScoreResult)
+def calculate_score(request: ScoreRequest) -> ScoreResult:
+    if set(request.dimension_scores) != set(request.weights):
+        raise HTTPException(status_code=422, detail="scores and weights must use the same dimensions")
+    if not set(request.known_dimensions).issubset(request.dimension_scores):
+        raise HTTPException(status_code=422, detail="known_dimensions must be present in dimension_scores")
+    known = [k for k in request.dimension_scores if k in set(request.known_dimensions)]
+    excluded = [k for k in request.dimension_scores if k not in set(request.known_dimensions)]
+    known_weight = sum(request.weights[k] for k in known)
+    score = round(sum(request.dimension_scores[k] * request.weights[k] for k in known) / known_weight) if known_weight else 50
+    return ScoreResult(
+        score=score,
+        evidence_coverage=round(known_weight * 100),
+        known_dimensions=known,
+        excluded_dimensions=excluded,
+    )
 
 
 @app.post("/eligibility/filter", response_model=PairEligibilityResult)
