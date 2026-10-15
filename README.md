@@ -136,6 +136,17 @@ For a short presentation, follow this order:
 
 Keep the demo clear that the included profiles are synthetic until a real, consented cohort has been imported.
 
+## Backend API starter (new)
+
+A FastAPI starter now lives in [backend/](backend/README.md). It adds:
+
+- `POST /agents/turn`: server-side LLM call with isolated agent context, structured JSON output, schema validation, and evidence checks.
+- `POST /eligibility/filter`: filters pairs before ranking unless consent, opt-in, and mutual age/gender preferences are explicitly satisfied.
+- `POST /score`: validates configurable weights and calculates scores only over known dimensions, with evidence coverage reported separately.
+- Backend tests for scoring, unknown evidence, and eligibility run in GitHub Actions.
+
+**Important:** this API is committed but is not yet deployed or connected to the GitHub Pages frontend. The current live UI still uses its existing local engine until the API is deployed and integration work is completed. Configure `OPENAI_API_KEY` only as a server-side secret; never place it in frontend code or Git.
+
 ## 🗺️ Current limitations
 
 - Keyword extraction is simple and may miss context, synonyms or sarcasm.
