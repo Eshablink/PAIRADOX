@@ -309,7 +309,6 @@ function analyze(p){
     const rejects=re=>{
       const match = re.exec(t);
       if(!match) return false;
-      // Examine only the clause immediately before a keyword, not older clauses.
       const before = t.slice(0, match.index).split(/[,;.!?\\n]|\\bbut\\b|\\bhowever\\b/i).pop();
       return /(?:\\bdo not\\b|\\bdon't\\b|\\bdoes not\\b|\\bdoesn't\\b|\\bdid not\\b|\\bdidn't\\b|\\bnever\\b|\\bnot into\\b|\\bnot interested in\\b|\\bdon't like\\b|\\bdoesn't like\\b|\\bdo not like\\b|\\bdoes not like\\b|\\bdon't enjoy\\b|\\bdoesn't enjoy\\b|\\bnot a fan of\\b|\\bno interest in\\b|\\bdislike\\b|\\bhate\\b|\\bavoids?\\b)(?:\\s+\\w+){0,3}\\s*$/i.test(before);
     };
