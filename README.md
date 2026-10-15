@@ -67,12 +67,10 @@ The mutual score combines the two agents’ scores, giving extra weight to the l
 
 The built-in people are **synthetic demo profiles**, clearly labelled in the app. They are not real participants and must not be presented as such. For a real cohort, use the import flow below.
 
-## 📦 Research profile list (41 entries; not the live cohort)
+## 📦 Synthetic QA profile list
 
-- [41-profile research list](data/pairadox-40-synthetic-profiles.csv): entries 1–40 contain fictional QA attributes from the supplied test document and are **not verified biographies**. Entry 41 is Thakshil's research draft, combining technical signals from his public personal website and LinkedIn search result with friend-provided observations. His Instagram page could not be retrieved, so no Instagram-derived claims are made. In the app's Setup screen, **Load 41-profile research list (QA mode)** loads the unified list for review; the 40 synthetic entries can be tested in pairings, while Thakshil remains visible as a research draft and is excluded from agent conversations/rankings until he reviews and consents.
-- Thakshil's age, gender, connection intent, and preferences are left blank because they have not been established. His friend-described education and social/support style are identified in the row's source notes. His consent status remains **pending**.
-
-The list now has 41 entries in one place, but it is a research/QA asset and is **not automatically loaded into the live cohort**. Before Thakshil is used for real matchmaking, have him review the profile and explicitly agree to participate. The app's real-cohort importer continues to require consent and participant-provided text.
+- [40-profile synthetic QA list](data/pairadox-40-synthetic-profiles.csv): entries contain fictional QA attributes from the supplied test document and are **not verified biographies**. Thakshil's candidate profile and associated research notes have been removed from the repository and experimental cohort.
+- The app's **Load 41-profile experimental list** option loads 40 synthetic QA profiles plus the user's AI-drafted profile. Review the AI-drafted traits before treating them as facts.
 
 ## 🚀 Run Pairadox locally
 
