@@ -511,7 +511,7 @@ Slow Sunday: coffee, a book and the dog.
 Cooked pasta for the band after rehearsal.`}
 ].map(p=>({...p,synthetic:true,consent:true,removed:[]}));
 
-// 40 synthetic QA profiles plus Thakshil's research draft. His draft is visible but excluded from matchmaking until he consents.
+// 40 synthetic QA profiles plus the user's AI-drafted profile.
 const RESEARCH_COHORT=[
   {
     "id": "qa-01",
@@ -1158,7 +1158,7 @@ function vStep1(){
     <p class="small muted" style="margin:10px 0 2px">LinkedIn: <code>${esc(p.linkedinUrl)}</code> · URL stored, not fetched · ${p.researchOnly?'public-source research notes':p.linkedinText?.trim()?'text supplied':'text missing'}</p>
     <p class="small muted" style="margin:0">Instagram: <code>${esc(p.instagramUrl)}</code> · URL stored, not fetched · ${p.researchOnly?'not retrieved; no Instagram evidence used':p.instagramText?.trim()?'text supplied':'text missing'}</p>
     <p class="small" style="margin:10px 0 0">${p.analysis.interests.length} interests, ${p.analysis.values.length} values extracted</p>
-    ${p.researchOnly?`<p class="small muted">${esc(p.researchNote)} Friend-provided observations are labelled as such in the source notes. Excluded from matchmaking until Thakshil reviews and consents.</p>`:p.synthetic?'':`<button class="btn ghost small" data-a="delP" data-v="${esc(p.id)}">Remove participant</button>`}
+    ${p.researchOnly?`<p class="small muted">${esc(p.researchNote)}</p>`:p.synthetic?'':`<button class="btn ghost small" data-a="delP" data-v="${esc(p.id)}">Remove participant</button>`}
   </div>`).join('')}</div>`;
 }
 function vForm(){return `<div class="panel" id="addform"><h2>Add a participant</h2>
@@ -1336,7 +1336,7 @@ const H={
     S.participants=RESEARCH_COHORT.map(p=>({...p,analysis:analyze(p)}));
     S.convos={};S.done=false;S.confirmed=false;S.step=1;S.speed='instant';
     S.selProfile=RESEARCH_COHORT[0].id;S.selRank=RESEARCH_COHORT[0].id;S.selPair=null;
-    S.bulkMsg='Loaded 41 research entries: 40 synthetic QA profiles plus Thakshil at #41. Thakshil is visible for review but excluded from matchmaking while consent is pending.';
+    S.bulkMsg='Loaded 41 entries: 40 synthetic QA profiles plus your AI-drafted profile. Review the draft before treating inferred traits as facts.';
     render();window.scrollTo({top:0});
   },
   csvExample(){S.bulkCsv='name,linkedinUrl,instagramUrl,consent,linkedinText,instagramText\n"Participant One","https://www.linkedin.com/in/example1","https://www.instagram.com/example1",yes,"Headline and About text supplied by the person","Bio and captions supplied by the person"';S.bulkMsg='Example only—not a real participant. Replace every field with verified participant-provided data before importing.';render();},
