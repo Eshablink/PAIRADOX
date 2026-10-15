@@ -309,8 +309,8 @@ function analyze(p){
     const rejects=re=>{
       const match = re.exec(t);
       if(!match) return false;
-      const before = t.slice(0, match.index).split(/[,;.!?\\n]/).pop().trim().toLowerCase();
-      return /(?:do not|don't|does not|doesn't|did not|didn't|never|not into|not interested in|don't like|doesn't like|do not like|does not like|don't enjoy|doesn't enjoy|not a fan of|no interest in|dislike|dislikes|hate|hates|avoid|avoids)(?:\\s+\\w+){0,3}\\s*$/.test(before);
+      const before = t.slice(0, match.index).split(/[,;.!?\n]/).pop().trim().toLowerCase();
+      return /(?:do not|don't|does not|doesn't|did not|didn't|never|not into|not interested in|don't like|doesn't like|do not like|does not like|don't enjoy|doesn't enjoy|not a fan of|no interest in|dislike|dislikes|hate|hates|avoid|avoids)(?:\s+\w+){0,3}\s*$/.test(before);
     };
     for(const [k,d] of Object.entries(LEX)) if(d.re.test(t) && !rejects(d.re)) addHit(interests,k,d.label,s,false);
     const explicit=VALVERB.test(t);
