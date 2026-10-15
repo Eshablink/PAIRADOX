@@ -304,9 +304,15 @@ function analyze(p){
       for(const [k,d] of Object.entries(LEX)) if(d.re.test(t)) wantKeys.add(k);
       continue; // traits wanted in a partner are not the participant's own interests
     }
-    for(const [k,d] of Object.entries(LEX)) if(d.re.test(t)) addHit(interests,k,d.label,s,false);
+    // Conservative context guard: don't extract a keyword when the same sentence explicitly rejects it.
+    // This is intentionally narrow; sarcasm and nuanced negation still need review by the participant.
+    const rejects=(label,re)=> {
+      const rx=new RegExp('\\\\b(?:do not|don\\'t|does not|doesn\\'t|did not|didn\\'t|never|not into|not interested in|dislike|dislikes|hate|hates|avoid|avoids)\\\\s+(?:really\\\\s+)?(?:\\\\w+\\\\s+){0,2}(?:'+re.source.replace(/^\\\\b|\\\\b$/g,'')+')\\\\b','i');
+      return rx.test(t) || new RegExp('\\\\b(?:no interest in|not a fan of)\\\\s+(?:'+re.source.replace(/^\\\\b|\\\\b$/g,'')+')\\\\b','i').test(t);
+    };
+    for(const [k,d] of Object.entries(LEX)) if(d.re.test(t) && !rejects(d.label,d.re)) addHit(interests,k,d.label,s,false);
     const explicit=VALVERB.test(t);
-    for(const [k,d] of Object.entries(VLEX)) if(d.re.test(t)) addHit(values,k,d.label,s,explicit);
+    for(const [k,d] of Object.entries(VLEX)) if(d.re.test(t) && !rejects(d.label,d.re)) addHit(values,k,d.label,s,explicit);
   }
   const rm=new Set(p.removed||[]);
   const I=Object.values(interests).filter(x=>!rm.has('i:'+x.key));
@@ -396,9 +402,14 @@ class Agent{
     // location
     {const a=me.location?.value?.toLowerCase(),b=h.location?.toLowerCase();const known=!!(a&&b);
      dims.location={score:known?(a===b?100:25):50,known,reason:known?(a===b?`Both state ${me.location.value}.`:`Different cities stated (${me.location.value} vs ${h.location}); remote or relocation is unknown.`):'Location missing on at least one side.'};}
-    let total=0,cov=0;
-    for(const k in W){total+=W[k]*dims[k].score;if(dims[k].known)cov+=W[k];}
-    let capped=false;total=Math.round(total);
+    // Missing dimensions are displayed as unknown (with a neutral placeholder for the bar),
+    // but are excluded from the compatibility calculation rather than treated as average evidence.
+    let weighted=0,knownWeight=0,cov=0;
+    for(const k in W){
+      if(dims[k].known){weighted+=W[k]*dims[k].score;knownWeight+=W[k];cov+=W[k];}
+    }
+    let total=knownWeight?Math.round(weighted/knownWeight):50;
+    let capped=false;
     if(dims.intent.known&&dims.intent.score<=15&&total>55){total=55;capped=true;}
     const unknown=Object.keys(W).filter(k=>!dims[k].known).map(k=>DIM_LABEL[k]);
     return {total,coverage:Math.round(cov*100),dims,capped,unknown};
@@ -441,7 +452,7 @@ function textVerdict(me,ev){
   let t=`Verdict from ${me.first}'s side: ${ev.total}/100 with ${ev.coverage}% of the weighting backed by evidence.`;
   if(top.length) t+=` Strongest: ${top.join(', ')}.`;
   if(ev.capped) t+=` Capped at 55 because stated intents conflict.`;
-  if(ev.unknown.length) t+=` Unknown, scored neutral: ${ev.unknown.join(', ').toLowerCase()}.`;
+  if(ev.unknown.length) t+=` Unknown dimensions are excluded from the score; evidence coverage is ${ev.coverage}%.`;
   return t;
 }
 async function converse(pa,pb,emit){
@@ -1281,7 +1292,7 @@ function vStep4(){
   const f=S.rankFilter||'all',others=f==='all'?all:all.filter(x=>band(x.r)===f);
   const FL=[['all','All evaluated'],['strong','Score 70+'],['mid','Score 50 to 69'],['low','Below 50 or capped']];
   return `<div class="stagebar"><span class="stagepill">Stage 04 of 04 · Match rankings</span><span class="statepill">${Object.keys(S.convos).length} template conversations complete</span></div>
-  <div class="rhero"><div class="pagehead"><h2>Match rankings</h2><p class="lead">Ranked from rule-based scores over the profile text each person supplied. Five weighted dimensions; hatched bars mean at least one agent had no data and scored it a neutral 50.</p></div></div>
+  <div class="rhero"><div class="pagehead"><h2>Match rankings</h2><p class="lead">Ranked from rule-based scores over the profile text each person supplied. Five weighted dimensions; hatched bars show unknown dimensions; they are excluded from the score. Evidence coverage is shown separately.</p></div></div>
   ${prov()}
   <div class="ribbon"><div class="row"><span class="lbl" style="margin:0">Viewing rankings for</span><div class="pillsel" style="margin:0" role="tablist">${rankedPeople.map(p=>`<button class="pill" role="tab" aria-selected="${p.id===me.id}" data-a="selRank" data-v="${esc(p.id)}">${esc(p.name.split(' ')[0])}</button>`).join('')}</div></div>
     <div class="filters" role="group" aria-label="Score band filter">${FL.map(([k,l])=>`<button class="pill" aria-pressed="${f===k}" aria-selected="${f===k}" data-a="rankFilter" data-v="${k}">${l} (${cnt[k]})</button>`).join('')}</div>
@@ -1298,7 +1309,7 @@ function vStep4(){
     ${shared.length?`<div><span class="lbl">Shared interests found in both texts</span>${shared.map(x=>`<span class="tag rose">${esc(x)}</span>`).join('')}</div>`:''}
     <div class="dims">${ks.map(k=>`<div class="dim"><span>${DIM_LABEL[k]} <span class="muted small">${Math.round(W[k]*100)}%</span></span><div class="bar ${r.dimMutual[k].known?'':'unk'}"><i style="width:${r.dimMutual[k].score}%"></i></div><span>${r.dimMutual[k].score}</span></div>`).join('')}</div>
     <div class="rcols"><div class="rbox"><span class="lbl">Strongest evidence</span><ul>${conn.length?conn.map(k=>`<li><b>${DIM_LABEL[k]}:</b> ${esc(mine.dims[k].reason)}</li>`).join(''):'<li class="muted">No dimension reached 70 on both sides.</li>'}</ul></div>
-      <div class="rbox"><span class="lbl">Things to check or explore</span><ul>${expl.length?expl.map(k=>`<li><b>${DIM_LABEL[k]}:</b> ${r.dimMutual[k].known?esc(mine.dims[k].reason):'no data on at least one side, scored a neutral 50'}</li>`).join(''):'<li class="muted">Nothing flagged.</li>'}</ul></div></div>
+      <div class="rbox"><span class="lbl">Things to check or explore</span><ul>${expl.length?expl.map(k=>`<li><b>${DIM_LABEL[k]}:</b> ${r.dimMutual[k].known?esc(mine.dims[k].reason):'no data on at least one side; excluded from score'}</li>`).join(''):'<li class="muted">Nothing flagged.</li>'}</ul></div></div>
     <details><summary>Full reasoning from both agents</summary><div class="two" style="margin-top:6px"><div><b class="small">${esc(fm)}'s agent</b><ul class="ev why">${ks.map(k=>`<li><b>${DIM_LABEL[k]}:</b> ${esc(mine.dims[k].reason)}</li>`).join('')}</ul></div>
       <div><b class="small">${esc(fo)}'s agent</b><ul class="ev why">${ks.map(k=>`<li><b>${DIM_LABEL[k]}:</b> ${esc(theirs.dims[k].reason)}</li>`).join('')}</ul></div></div></details>
     ${(mine.unknown.length||theirs.unknown.length)?`<p class="small" style="margin:6px 0"><b>Uncertain:</b> ${esc([...new Set([...mine.unknown,...theirs.unknown])].join(', '))} could not be compared from the text provided.</p>`:''}
