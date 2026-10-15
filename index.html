@@ -313,7 +313,7 @@ function analyze(p){
     };
     for(const [k,d] of Object.entries(LEX)) if(d.re.test(t) && !rejects(d.re)) addHit(interests,k,d.label,s,false);
     const explicit=VALVERB.test(t);
-    for(const [k,d] of Object.entries(VLEX)) if(d.re.test(t) && !rejects(d.label,d.re)) addHit(values,k,d.label,s,explicit);
+    for(const [k,d] of Object.entries(VLEX)) if(d.re.test(t) && !rejects(d.re)) addHit(values,k,d.label,s,explicit);
   }
   const rm=new Set(p.removed||[]);
   const I=Object.values(interests).filter(x=>!rm.has('i:'+x.key));
